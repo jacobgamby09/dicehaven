@@ -8,6 +8,21 @@ Dette er den løbende implementeringslog for greenfield-versionen i denne mappe.
 - **M1 — Combat vertical slice:** Spilbar end-to-end gennem Forest Brute, Tier 2 crafting, Frontier Forge og første Wolf Den-encounter. Næste checkpoint er bruger-playtest og lyd/juice baseret på den faktiske oplevelse.
 - **M2+ — Skill Tree-mekanikker, sustain og dybere settlement:** Ikke påbegyndt.
 
+## 2026-07-11 — Direkte Dice Rack-loadout
+
+### Ændret
+
+- Den separate **Active dice pool** øverst i Dice Rack er fjernet, så inventoryet er den eneste primære loadout-flade.
+- Inventory-headeren viser nu den samlede equipped-status, og hvert terningekort viser tydeligt, om terningen er udstyret og i hvilken slot.
+- Et tryk på en terning åbner en handlingsrække direkte under samlingen med **Equip** eller **Unequip**.
+- En ledig slot bruges automatisk. Hvis alle slots er fyldt, vælger spilleren eksplicit den udstyrede terning, som skal erstattes.
+- Face-værdier og blueprint-link er bevaret som sekundære detaljer uden at gentage loadout-handlingen.
+
+### Verificeret
+
+- Browserflowet skifter korrekt mellem `1/1 equipped`, `0/1 equipped`, **Unequip** og **Equip die** uden horisontalt overflow.
+- Production-build og hele testsuiten består: 7 testfiler / 55 tests.
+
 ## 2026-07-11 — Minimalistisk overlay-stabilisering
 
 ### Ændret
@@ -30,7 +45,7 @@ Dette er den løbende implementeringslog for greenfield-versionen i denne mappe.
 - Browsermåling bekræfter, at Buy-knappen ligger inden for panelet og er vertikalt centreret.
 - Mobil-browsertesten bekræfter både aktiv og inaktiv state: Roll Speed-baren er integreret i kontrolsektionen, animerer med gathering-clockens faktiske progressværdi, og XP-labelen er synlig uden overflow.
 - Mobil-browsertesten fanger desuden `Rolling…` med synligt fuld fill og efterfølgende dynamisk opladning uden Safari-, konsol- eller overflow-fejl.
-- Production-build og hele suiten består fortsat: 7 testfiler / 54 tests.
+- Production-build og hele suiten består fortsat: 7 testfiler / 55 tests.
 
 ## 2026-07-11 — Dice Rack & visuelle Skill Trees
 

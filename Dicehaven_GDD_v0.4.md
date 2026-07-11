@@ -22,6 +22,7 @@ Sprogregel: GDD'en er på dansk (arbejdssprog). **Al spiller-vendt tekst i spill
 *Revision 2026-07-11 (3): Dice stage viser en fremtrædende Roll Speed-HUD med countdown, interval og progressbar. Skill Tree-balancen skriver altid XP-enheden direkte ved tallet (§12).*
 *Revision 2026-07-11 (4): Roll Speed bruger en custom Safari-sikker fill frem for native progress. Timeren er en full-width del af dice stage, står fuld under selve kastet og nulstiller derefter til næste cyklus (§12).*
 *Revision 2026-07-11 (5): Roll Speed-timeren er flyttet ind i Dice Tray'ens eksisterende lyse kontrolsektion under headeren. Den er dermed visuelt adskilt fra filt-scenen uden at fremstå som et ekstra kort oven på terningerne (§12).*
+*Revision 2026-07-11 (6): Dice Rack bruger inventoryet som primær loadout-flade. Valg af en fysisk terning viser straks equip/unequip eller et eksplicit valg af den slot, der skal erstattes; den dobbelte Active Dice Pool-oversigt er fjernet (§12).*
 
 ---
 
@@ -319,7 +320,7 @@ Bygger videre på det implementerede mobil-first-layout (topbar med ressource-co
 Udvidelser pr. milestone:
 
 * **Sidemenuen** er navigationen til Skills, **Combat**, **Settlement** og tværgående opskrifter. Skill Trees åbnes lokalt fra den relevante skill-header, så konteksten aldrig mistes.
-* **Dice Rack:** stort overlay med aktive slots, fysisk inventory, filtre, face-inspector, equip/unequip/swap og synlige Tier 2-blueprints. Tomme slots producerer og træner ikke.
+* **Dice Rack:** stort overlay med fysisk inventory som primær flade, filtre, tydelig equipped-status, direkte equip/unequip/swap efter valg, face-inspector og synlige Tier 2-blueprints. Ledige slots vælges automatisk; når loadoutet er fuldt, skal spilleren eksplicit vælge den terning, der erstattes. Tomme slots producerer og træner ikke.
 * **Skill Tree:** minimalistisk overlay med fire upgrade-spor, tydelige locked/reachable/ready/purchased-states og et detailpanel med før/efter, pris og krav. Ingen fast canvas eller todimensionel panorering i første stabile version.
 * **Roll Speed-HUD:** ligger som en integreret full-width kontrolrække i Dice Tray'ens lyse headersektion, direkte over filt-scenen. Den bruger en custom CSS-fill frem for browserens native progress-element, viser live countdown, pause/inactive-state og aktuelt interval, og står fuld under `Rolling…`, før næste cyklus begynder.
 * **XP-enheder:** XP-balancer må aldrig vises som nøgne tal. Skill Tree-headeren viser eksempelvis `264 XP`, også når den forklarende label skjules på mobil.

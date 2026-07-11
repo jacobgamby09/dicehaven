@@ -48,9 +48,7 @@ export function DiceRackOverlay({
       "",
   );
   const firstEmptySlot = progression.loadout.findIndex((id) => id === null);
-  const [selectedSlot, setSelectedSlot] = useState(
-    firstEmptySlot >= 0 ? firstEmptySlot : 0,
-  );
+  const equippedCount = progression.loadout.filter(Boolean).length;
 
   const selectedDie =
     progression.inventory.find((die) => die.id === selectedDieId) ??
@@ -65,7 +63,6 @@ export function DiceRackOverlay({
     progression.inventory
       .slice(0, progression.inventory.indexOf(selectedDie) + 1)
       .filter((die) => die.kind === selectedDie.kind).length;
-  const targetSlot = Math.min(selectedSlot, progression.slots - 1);
   const recipe = getTierTwoGatheringRecipe(skill);
   const ownedTierTwoDice = progression.inventory.filter(
     (die) => die.kind === recipe.kind,
@@ -85,65 +82,20 @@ export function DiceRackOverlay({
       className={`dice-rack dice-rack--${skill}`}
       eyebrow={`${skill === "woodcutting" ? "Woodcutting" : "Mining"} loadout`}
       onClose={onClose}
-      subtitle="Choose the physical dice your crew takes into the next roll."
+      subtitle="Tap a die to select it, then equip or manage it."
       title="Dice Rack"
     >
       <div className="dice-rack__body">
-        <section aria-labelledby="active-rack-title" className="rack-loadout">
-          <div className="rack-section-heading">
-            <div>
-              <span className="eyebrow">Ready to roll</span>
-              <h3 id="active-rack-title">Active dice pool</h3>
-            </div>
-            <span>{progression.loadout.filter(Boolean).length} of {progression.slots} equipped</span>
-          </div>
-          <div className="rack-loadout__slots">
-            {progression.loadout.map((dieId, slotIndex) => {
-              const die = progression.inventory.find(
-                (candidate) => candidate.id === dieId,
-              );
-              return (
-                <div
-                  className={`rack-slot ${slotIndex === targetSlot ? "rack-slot--target" : ""}`}
-                  key={`rack-slot-${slotIndex + 1}`}
-                >
-                  <button
-                    aria-pressed={slotIndex === targetSlot}
-                    className="rack-slot__select"
-                    onClick={() => {
-                      setSelectedSlot(slotIndex);
-                      if (die) setSelectedDieId(die.id);
-                    }}
-                    type="button"
-                  >
-                    <small>Slot {slotIndex + 1}</small>
-                    <strong>{die ? getGatheringDieName(die.kind) : "Empty slot"}</strong>
-                    <span>{die ? `Tier ${getGatheringDieTier(die.kind)}` : "Select a die below"}</span>
-                  </button>
-                  {die ? (
-                    <button
-                      aria-label={`Unequip ${getGatheringDieName(die.kind)} from slot ${slotIndex + 1}`}
-                      className="rack-slot__remove"
-                      onClick={() => unequipSlot(skill, slotIndex)}
-                      type="button"
-                    >
-                      ×
-                    </button>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
         <div className="dice-rack__workspace">
           <section aria-labelledby="owned-dice-title" className="rack-inventory">
             <div className="rack-section-heading">
               <div>
                 <span className="eyebrow">Your collection</span>
-                <h3 id="owned-dice-title">Owned dice</h3>
+                <h3 id="owned-dice-title">Choose a die</h3>
               </div>
-              <span>{progression.inventory.length} physical dice</span>
+              <span className="rack-equipped-count">
+                <strong>{equippedCount}/{progression.slots}</strong> equipped
+              </span>
             </div>
             <div aria-label="Filter dice" className="rack-filters">
               {FILTERS.map((item) => (
@@ -177,16 +129,85 @@ export function DiceRackOverlay({
                       {getGatheringDieTier(die.kind) === 2 ? "T2" : "D6"}
                     </span>
                     <strong>{getGatheringDieName(die.kind)} #{ordinal}</strong>
-                    <small>
+                    <small
+                      className={slot >= 0 ? "rack-die-card__equipped" : ""}
+                    >
                       {level < requirement
-                        ? `Requires Level ${requirement}`
+                        ? `Level ${requirement} required`
                         : slot >= 0
-                          ? `Equipped · Slot ${slot + 1}`
-                          : "On bench"}
+                          ? `✓ Equipped · Slot ${slot + 1}`
+                          : "Tap to select"}
                     </small>
                   </button>
                 );
               })}
+            </div>
+
+            <div aria-live="polite" className="rack-quick-action">
+              <div className="rack-quick-action__copy">
+                <span>Selected</span>
+                <strong>{getGatheringDieName(selectedDie.kind)} #{selectedOrdinal}</strong>
+                <small>
+                  {selectedIsLocked
+                    ? `Requires Level ${selectedRequirement}`
+                    : equippedSlot >= 0
+                      ? `Currently in slot ${equippedSlot + 1}`
+                      : firstEmptySlot >= 0
+                        ? `Open slot ${firstEmptySlot + 1} available`
+                        : "All slots are currently filled"}
+                </small>
+              </div>
+
+              {equippedSlot >= 0 ? (
+                <button
+                  className="rack-primary-action rack-primary-action--muted"
+                  onClick={() => unequipSlot(skill, equippedSlot)}
+                  type="button"
+                >
+                  Unequip
+                </button>
+              ) : firstEmptySlot >= 0 ? (
+                <button
+                  className="rack-primary-action"
+                  disabled={selectedIsLocked}
+                  onClick={() => equipDie(skill, selectedDie.id, firstEmptySlot)}
+                  type="button"
+                >
+                  {selectedIsLocked
+                    ? `Level ${selectedRequirement} required`
+                    : "Equip die"}
+                </button>
+              ) : (
+                <div className="rack-replace-picker">
+                  <span>
+                    {selectedIsLocked
+                      ? `Level ${selectedRequirement} required`
+                      : "Replace equipped die:"}
+                  </span>
+                  <div>
+                    {progression.loadout.map((dieId, slotIndex) => {
+                      const equippedDie = progression.inventory.find(
+                        (die) => die.id === dieId,
+                      );
+                      return (
+                        <button
+                          disabled={selectedIsLocked}
+                          key={`replace-slot-${slotIndex + 1}`}
+                          onClick={() => equipDie(skill, selectedDie.id, slotIndex)}
+                          type="button"
+                        >
+                          <small>Slot {slotIndex + 1}</small>
+                          <strong>
+                            {equippedDie
+                              ? getGatheringDieName(equippedDie.kind)
+                              : "Empty"}
+                          </strong>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 
@@ -210,24 +231,6 @@ export function DiceRackOverlay({
                 Reach Level {selectedRequirement} to equip this die.
               </p>
             ) : null}
-            {equippedSlot >= 0 ? (
-              <button
-                className="rack-primary-action rack-primary-action--muted"
-                onClick={() => unequipSlot(skill, equippedSlot)}
-                type="button"
-              >
-                Unequip from slot {equippedSlot + 1}
-              </button>
-            ) : (
-              <button
-                className="rack-primary-action"
-                disabled={selectedIsLocked}
-                onClick={() => equipDie(skill, selectedDie.id, targetSlot)}
-                type="button"
-              >
-                Equip to slot {targetSlot + 1}
-              </button>
-            )}
             <button className="rack-tree-link" onClick={onOpenSkillTree} type="button">
               Improve this blueprint in Skill Tree →
             </button>
