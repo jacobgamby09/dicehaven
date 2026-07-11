@@ -1,0 +1,187 @@
+# Dicehaven — Progress & Patch Notes
+
+Dette er den løbende implementeringslog for greenfield-versionen i denne mappe. Nye spilbare features, balanceændringer og tekniske milepæle dokumenteres her, når de lander.
+
+## Aktuel status
+
+- **M0 — Auto-roll gathering:** Spilbar og verificeret med Upgrade Rush-progression.
+- **M1 — Combat vertical slice:** Spilbar end-to-end gennem Forest Brute, Tier 2 crafting, Frontier Forge og første Wolf Den-encounter. Næste checkpoint er bruger-playtest og lyd/juice baseret på den faktiske oplevelse.
+- **M2+ — Talents, sustain og dybere settlement:** Ikke påbegyndt.
+
+## 2026-07-10 — Post-boss loop, Frontier Forge & Wolf Den
+
+### Tilføjet
+
+- Forest Brute first-clear viser nu et længere blueprint-reveal med Forest Trophy, Brute Cleaver, Oakheart Axe, Copper Prospector, Barracks og Frontier Forge.
+- Resultatskærmen får ved first-clear et permanent “New blueprints unlocked”-panel med direkte navigation til Woodcutting, Mining og Settlement.
+- Sidebaren markerer T2-paths, Forge-readiness og Wolf Den-unlock.
+- Ny fysisk settlement-bygning: **Frontier Forge**, der koster 25 Oak Logs + 25 Copper Ore + 20 Monster Parts og kræver Forest Trophy uden at forbruge den.
+- Frontier Forge åbner **Copper Longsword** og **Oakguard Shield** som fysiske Combat Level 5-dice.
+- Copper Longsword koster 8 Oak Logs + 18 Copper Ore + 8 Monster Parts.
+- Oakguard Shield koster 18 Oak Logs + 8 Copper Ore + 8 Monster Parts.
+- Combat-inventory viser Forge-recipes tidligt som synlige mål, men crafting forbliver låst til bygningen findes.
+- Ny separat combat-zone: **Wolf Den preview** med kontinuerlige Dire Wolf-encounters og permanent 0/10 survey-progress.
+- Dire Wolf kan droppe den fysiske Level 6-die **Dire Wolf Claw**.
+- Save-format opgraderet til v9 med migration af Frontier Forge, Wolf Den-progress, zone-id'er, unlock-feedback og de nye combat-dice.
+
+### Balance og verificering
+
+- Dire Wolf: 22 HP, 5 Damage, 5,5s attack interval.
+- 500 runs: gammelt Brute Cleaver/Training Sword/Bandit Buckler-loadout vinder 10,6%.
+- 500 runs: Brute Cleaver/Copper Longsword/Oakguard Shield vinder 79%, median 20s.
+- 500 runs: balanceret fire-slot T2-loadout vinder 100% og slutter med gennemsnitligt 7,4 HP.
+- Fresh-state end-to-end-test går fra første gathering-roll gennem Forest Brute, Level 5, begge specialistdice, Tier 2-ressourcer, Frontier Forge, begge T2 combat dice og ind i Wolf Den på højst 1.200 gathering-rolls.
+- Production-build og hele suiten består: 6 testfiler / 49 tests.
+
+## 2026-07-10 — Tier 2 gathering & adjustable dice pools
+
+### Tilføjet
+
+- Ny navngiven Tier 2-ressource til Woodcutting: **Oak Logs**. Copper vises nu konsekvent som **Copper Ore**.
+- **Oakheart Axe** producerer både Wood og Oak Logs; craft koster 120 Wood + 80 Stone + 12 Monster Parts.
+- **Copper Prospector** producerer både Stone og Copper Ore; craft koster 80 Wood + 120 Stone + 12 Monster Parts.
+- Forest Brute first-clear fungerer som blueprint-gate. Dice må gerne craftes tidligt og ligge synligt på bænken, men kræver den relevante gathering-skill på Level 5 for equip.
+- Begge specialistdice har seks egne face-trin til 30 / 45 / 70 / 110 / 170 / 260 skill XP.
+- Specialist-faces blander basis- og rare-resource, så mastered T1-dice fortsat er bedst til ren Wood/Stone.
+- Gathering-poolen viser nu hele det fysiske inventory, crew-position eller bench-status, tier og level-lock.
+- Nyt crew-loadout-panel: vælg en fysisk die og swap den ind i et konkret slot. Allerede udstyrede instanser bytter plads og kan ikke duplikeres.
+- Tier 2-blueprintkort viser unlock-status, recipe cost, level-gate, antal ejede kopier og manglende materialer.
+- Rare-resource rolls vises på selve dien, i roll-summary, resource burst og topbaren.
+- Save-format opgraderet til v8 med migration, der bevarer v7-dice, loadouts, roll speed og al tidligere progression samt tilføjer Oak-wallet sikkert.
+
+### Verificeret
+
+- Tests dækker specialist-face-profiler, bootstrap-reglen, blueprint-gate, fysisk crafting, Level 5-equip, slot-swap og v7→v8 migration.
+- Fresh-state M1-ruten og alle tidligere combat-balance-guards består fortsat.
+- Production-build og hele den automatiske suite består: 6 testfiler / 44 tests.
+
+## 2026-07-10 — Upgrade Rush: gathering som mini-incremental
+
+### Tilføjet
+
+- Woodcutting og Mining har nu hver sit fysiske dice inventory og loadout med stabile terning-ID'er.
+- Hver Dull Axe og Rusty Pickaxe opgraderes individuelt gennem seks synlige face-trin: `[0,0,0,1,1,1] → [1,1,1,2,2,2]`.
+- Face-priserne er front-loadede til 5 / 8 / 12 / 18 / 28 / 45 skill XP.
+- Fire skill-wide Roll Speed-trin sænker intervallet fra 4,0s til 3,6s / 3,2s / 2,8s / 2,4s.
+- Second Slot koster 35 XP, Third Slot 180 XP; begge leverer straks en ny uslebet fysisk startterning.
+- Nyt Upgrade Workshop-UI med dice selector, seks-face map, præcis før/efter-visning, XP-balance og separate køb for face, speed og crew-slots.
+- Tier 2-horisonten vises som Oak Trail/Copper Vein og følger den planlagte hybrid: combat blueprint + skill-level gate + fysisk crafting.
+- Save-format opgraderet til v7. Eksisterende saves migrerer gamle sharpen-levels og slots til individuelle dice uden at miste XP, ressourcer, buildings eller combat-progress.
+- Separat Upgrade Rush-cadence-simulator, så early-game rytmen kan balances uden at gætte.
+
+### Verificeret
+
+- De første tre benchmark-køb lander ved ca. 20 / 52 / 100 aktive sekunder.
+- En repræsentativ rute leverer 12–16 køb inden for de første 30 aktive minutter.
+- Fresh-state M1-ruten består fortsat med den nye upgrade-strategi og den eksisterende guard på højst 550 gathering-rolls.
+- Production-build og hele den automatiske suite består: 6 testfiler / 36 tests.
+
+## 2026-07-10 — Balance simulation & fresh M1 verification
+
+### Tilføjet
+
+- Ren seeded combat matchup-simulator med samme Damage/Block-regler og event-prioritet som spillet.
+- 500-run matchup-tests for hver normal Forest Edge-fjende og Forest Brute.
+- Fresh-state integrationstest fra gathering-rolls gennem Workshop, crafting, Combat, Forest Trophy og Barracks.
+- Pacing-guard: hele gathering-forberedelsen må højst kræve 550 aktive rolls med greedy early upgrades.
+
+### Balanceændringer
+
+- Training Sword ændret fra [0,0,1,1,1,2] til [0,1,1,1,2,2].
+- Forest Wolf HP: 6 → 4.
+- Wild Boar HP: 9 → 5.
+- Bandit Scout HP: 7 → 4.
+- Forest Brute HP tunet til 34 for at bevare gear-checket efter sword-buffet.
+
+### Verificerede resultater
+
+- Sword + Shield: 100% single-encounter win rate mod de tre normale enemies i 500 seeds.
+- Median TTK: Forest Wolf 12s, Wild Boar 16s, Bandit Scout 12s.
+- Forest Brute med rent crafted Sword/Sword/Shield: 35,2% win rate.
+- Forest Brute med Sword/Shield/Wolf Fang: 57,8% win rate, median TTK 52s.
+- Fresh M1 gathering-forberedelse: 494 rolls ≈ 32,9 minutter ved normal hastighed.
+- 5 testfiler / 29 tests består.
+
+## 2026-07-10 — Combat Feel Pass 1
+
+### Tilføjet
+
+- Combat-effects resolver nu på terningens landing i stedet for ved animationens start.
+- Enemy attacks holdes tilbage, mens et player-roll er i luften; player-roll beholder prioritet ved samtidighed.
+- Damage, Block og Light får separate, animerede resolution-badges.
+- Animeret enemy-transition mellem kills.
+- Midlertidig kill/loot-popup med XP, Monster Parts, Scouted-bonus og fundne dice.
+- Run-dashboard med kills, XP, Parts og dice drops.
+- Særskilt Forest Brute boss-reveal og visuel boss-state.
+- Defeat-resultater forklarer, om loadout mangler Block, Damage eller generel styrke.
+- Combat-die inspector viser alle seks faces, gennemsnit, source, ownership og level-gate.
+- Level-låste dice fremstår som synlige kommende mål frem for udtonede kort.
+- Save-format opgraderet til v6 med migration af kill-feedback og defeat-data.
+
+### Verificeret
+
+- 25 automatiske tests består, inklusive kill-feedback og defeat-diagnose.
+- Production-build består.
+
+## 2026-07-10 — Forest Edge, boss og Barracks
+
+### Tilføjet
+
+- Kontinuerlige Combat-runs: en ny fjende spawner automatisk efter hvert normalt kill.
+- Forest Edge-pool med Forest Wolf, Wild Boar og Bandit Scout.
+- Separat HP, damage, attack speed, XP og drop table pr. fjendetype.
+- Zone-progress gemmes permanent og fyldes til 20/20.
+- Forest Brute spawner automatisk ved fuld zone-bar.
+- Forest Trophy og Brute Cleaver er garanterede first-clear rewards.
+- Nye enemy drops: Boar Tusk og Bandit Buckler.
+- Run-loot og Combat XP tildeles efter hvert kill og beholdes ved nederlag/retreat.
+- Efter boss-clear kan Forest Edge patruljeres videre for drops og Monster Parts.
+- Barracks kan bygges med Forest Trophy + resources og åbner det fjerde combat-slot.
+- Barracks vises fysisk i Settlement, og sidebaren viser boss/building-status.
+- Save-format opgraderet til v5 med migration af eksisterende Combat-inventory og sessions.
+
+### Verificeret
+
+- 25 automatiske tests består.
+- Production-build består.
+
+## 2026-07-10 — Combat foundation
+
+### Tilføjet
+
+- Combat som aktiv aktivitet, der midlertidigt stopper gathering.
+- Tre loadout-slots med fysisk dice inventory og equip/unequip.
+- Combat Level baseret på lifetime Combat XP; XP bruges ikke som valuta.
+- Level-gates på combat dice.
+- Craftable Training Sword, Wooden Shield og Torch.
+- Forest Wolf som første komplet spilbare encounter.
+- Automatiske combat-rolls, tidsbaserede enemy attacks, HP, Damage og Block.
+- Torch/Light giver Scouted og præcis ét ekstra loot-roll.
+- Monster Parts samt chance for det droppede Level 3-die Wolf Fang.
+- Sejr, nederlag og retreat; ingen progression mistes, og gathering genoptages automatisk.
+- Monster Parts i topbaren og Combat-status i sidebaren.
+- Save-migration fra crafted booleans til inventory-antal og loadout.
+
+### Verificeret
+
+- 21 automatiske tests består.
+- Production-build består.
+- Localhost indlæser uden browserfejl.
+
+## 2026-07-10 — Skill upgrade economy
+
+- Historisk første pass; erstattet af Upgrade Rush-priserne ovenfor.
+- Gathering-upgrades bruger skillens spendable XP.
+- Sharpen-trin koster 10 / 25 / 50 XP.
+- Second Slot koster 100 XP i den relevante skill.
+- Lifetime XP og levels reduceres aldrig ved køb.
+- Ressourcer er reserveret til bygninger, crafting og combat gear.
+
+## 2026-07-10 — Greenfield prototype foundation
+
+- Vite, React, TypeScript, Zustand persistence, Motion og Vitest.
+- Responsiv Melvor-inspireret side navigation og global resource bar.
+- Woodcutting og Mining med én bevidst svag startterning hver.
+- Seeded deterministic roll-engine.
+- Aktiv skill er adskilt fra den side, spilleren ser på.
+- Workshop kan bygges i Settlement og åbner Combat crafting.
