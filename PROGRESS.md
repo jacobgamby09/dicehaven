@@ -8,6 +8,21 @@ Dette er den løbende implementeringslog for greenfield-versionen i denne mappe.
 - **M1 — Combat vertical slice:** Spilbar end-to-end gennem Forest Brute, Tier 2 crafting, Frontier Forge og første Wolf Den-encounter. Næste checkpoint er bruger-playtest og lyd/juice baseret på den faktiske oplevelse.
 - **M2+ — Skill Tree-mekanikker, sustain og dybere settlement:** Ikke påbegyndt.
 
+## 2026-07-11 — Minimalistisk overlay-stabilisering
+
+### Ændret
+
+- Det organiske, fast-positionerede Skill Tree-canvas er erstattet af fire enkle upgrade-spor: starter-blueprint, roll rhythm, crew slots og Tier 2-specialist.
+- Nodes er nu kompakte kort i almindeligt dokumentflow, så de aldrig lander uden for viewporten eller ser halvt indlæste ud.
+- Mobilvisningen bruger én vertikal scrollbar og et kompakt sticky detail-/købspanel i stedet for separat canvas-scroll og et 360px detailområde.
+- Dice Rack er gjort mere minimalistisk med normal overlay-højde, auto-fit inventory-grid og én stabil scroll-container.
+- Woodcutting/Mining-specifik illustration og tunge node-animationer er parkeret til et senere polish-pass.
+
+### Verificeret
+
+- iPhone-lignende viewport på 390×844 viser både Skill Tree og Dice Rack uden klippede nodes, tomme canvasområder eller horisontalt side-overflow.
+- Production-build og hele suiten består fortsat: 7 testfiler / 54 tests.
+
 ## 2026-07-11 — Dice Rack & visuelle Skill Trees
 
 ### Tilføjet

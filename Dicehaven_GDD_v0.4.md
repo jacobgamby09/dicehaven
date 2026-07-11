@@ -18,6 +18,7 @@ Sprogregel: GDD'en er på dansk (arbejdssprog). **Al spiller-vendt tekst i spill
 *Revision 2026-07-10 (3): Første Tier 2-slice er konkretiseret og implementeret med Oakheart Axe/Copper Prospector, Oak Logs/Copper Ore, fysisk crafting, Level 5-equip-gate og bench/swap-loadouts (§7.3–§7.4, §9, §13).*
 *Revision 2026-07-10 (4): Post-boss-loopet er lukket med blueprint-reveal, Frontier Forge, Copper Longsword/Oakguard Shield og Dire Wolf som første Wolf Den-balanceanker (§10, §11.4–§11.6, §12–§14).*
 *Revision 2026-07-11: Det smalle Upgrade Workshop er erstattet af Dice Rack og skill-specifikke Skill Trees. Gathering-face-upgrades deles nu pr. dice-blueprint, mens fysiske instanser fortsat ejes og udstyres individuelt (§7.3–§8, §12).*
+*Revision 2026-07-11 (2): Skill Tree og Dice Rack prioriterer et minimalistisk, mobilstabilt layout med almindeligt dokumentflow. Organiske canvas-træer og tung skill-theming er udsat til et senere polish-pass (§8, §12).*
 
 ---
 
@@ -185,7 +186,7 @@ Første version har **20 synlige nodes pr. gathering-skill**:
 
 Alle senere nodes er synlige som aspiration, men kun den næste node på en gren kan købes. Tidlige nodes ligger tæt og billigt; afstanden og priserne vokser frem mod speed-, slot- og Tier 2-milestones. Skill Trees åbnes fra skill-headeren ved siden af **Make Active** og viser altid disponibel skill-XP.
 
-Den tekniske struktur genbruges, men hver skill får sin egen visuelle metafor: Woodcutting vokser gennem rødder, stamme og krone; Mining bevæger sig gennem en mineskakt med klippelag, bjælker og krystaller. Købte forbindelser lyser op, tilgængelige paths pulserer diskret, og reduceret animation respekteres.
+Første visuelle pass er bevidst minimalistisk: nodes vises i fire stabile spor — starter-blueprint, roll rhythm, crew slots og Tier 2-specialist — med kompakte kort og tydelige states. Mobil bruger ét vertikalt scroll-flow og et kompakt sticky købspanel. Mere illustrerede Woodcutting/Mining-metaforer parkeres, indtil informationshierarki, pacing og mobiladfærd er playtestet.
 
 Senere mechanic-changing nodes som rerolls, crit harvest og specialiseringer udvider de eksisterende grene; de bliver ikke en separat valuta eller en konkurrerende menu.
 
@@ -316,7 +317,7 @@ Udvidelser pr. milestone:
 
 * **Sidemenuen** er navigationen til Skills, **Combat**, **Settlement** og tværgående opskrifter. Skill Trees åbnes lokalt fra den relevante skill-header, så konteksten aldrig mistes.
 * **Dice Rack:** stort overlay med aktive slots, fysisk inventory, filtre, face-inspector, equip/unequip/swap og synlige Tier 2-blueprints. Tomme slots producerer og træner ikke.
-* **Skill Tree:** stort tematisk overlay med organisk node-canvas, forbindelser, tydelige locked/reachable/ready/purchased-states og et fast detailpanel med før/efter, pris og krav.
+* **Skill Tree:** minimalistisk overlay med fire upgrade-spor, tydelige locked/reachable/ready/purchased-states og et detailpanel med før/efter, pris og krav. Ingen fast canvas eller todimensionel panorering i første stabile version.
 * **Combat-skærm**: genbruger dice tray-komponenten; tilføjer fjende-kort (navn, HP-bar, attack-telegraf), spillerens HP-bar, zone-progress-bar, loadout-vælger og en kompakt "dps ind/ud"-linje (Risk 3-mitigering: man skal kunne SE, hvorfor man taber)
 * **Impact-kontrakt:** Damage, Block og Light anvendes mekanisk ved terningens visuelle landing — aldrig før. Enemy attacks venter, mens et player-roll er i luften; player-roll har prioritet ved præcis samtidighed.
 * **Kill-feedback:** normale kills viser en kort enemy-transition og loot-popup, mens næste encounter starter. Run-dashboardet viser akkumulerede kills, XP, Monster Parts og dice drops.

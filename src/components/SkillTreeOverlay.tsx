@@ -1,5 +1,4 @@
-import { motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   getGatheringDieName,
   getNextGatheringFaceUpgrade,
@@ -87,18 +86,8 @@ export function SkillTreeOverlay({
   const purchaseSlot = useGameStore((state) => state.purchaseGatheringSlot);
   const nodes = getGatheringTalentNodes(skill);
   const [selectedNodeId, setSelectedNodeId] = useState("starter-face-1");
-  const [recentlyPurchased, setRecentlyPurchased] = useState<string | null>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
   const selectedNode =
     nodes.find((node) => node.id === selectedNodeId) ?? nodes[0];
-
-  useEffect(() => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-    viewport.scrollTop = Math.max(0, viewport.scrollHeight - viewport.clientHeight);
-    viewport.scrollLeft = 0;
-  }, []);
-  const nodesById = new Map(nodes.map((node) => [node.id, node]));
   const acquiredById = new Map(
     nodes.map((node) => [
       node.id,
@@ -148,7 +137,6 @@ export function SkillTreeOverlay({
       default:
         return;
     }
-    setRecentlyPurchased(selectedNode.id);
   };
 
   const purchaseLabel = (() => {
@@ -164,6 +152,40 @@ export function SkillTreeOverlay({
     }
     return `Buy for ${selectedNode.cost} XP`;
   })();
+  const tracks = [
+    {
+      id: "starter",
+      eyebrow: "Blueprint",
+      title: "Starter die",
+      description: "Improve the six faces shared by every starter die.",
+      nodes: nodes.filter((node) => node.id.startsWith("starter-face-")),
+    },
+    {
+      id: "speed",
+      eyebrow: "Automation",
+      title: "Roll rhythm",
+      description: "Shorten the time between automatic rolls.",
+      nodes: nodes.filter((node) => node.id.startsWith("speed-")),
+    },
+    {
+      id: "slots",
+      eyebrow: "Capacity",
+      title: "Crew slots",
+      description: "Add more physical dice to the active loadout.",
+      nodes: nodes.filter((node) => node.id.startsWith("slot-")),
+    },
+    {
+      id: "specialist",
+      eyebrow: "Tier 2",
+      title: skill === "woodcutting" ? "Oak specialist" : "Copper specialist",
+      description: "Earn the blueprint in combat, then improve its faces.",
+      nodes: nodes.filter(
+        (node) =>
+          node.id === "specialist-blueprint" ||
+          node.id.startsWith("specialist-face-"),
+      ),
+    },
+  ] as const;
 
   return (
     <OverlayDialog
@@ -177,97 +199,84 @@ export function SkillTreeOverlay({
         <span>Spendable skill XP</span>
         <strong>{progression.spendableXp}</strong>
       </div>
-      <div className="skill-tree__body">
-        <div className="skill-tree__viewport" ref={viewportRef}>
-          <div className="skill-tree__canvas">
-            <div aria-hidden="true" className="skill-tree__scenery">
-              <span className="tree-scenery__trunk" />
-              <span className="tree-scenery__crown" />
-              <span className="tree-scenery__ground" />
+      <div className="skill-tree-minimal__body">
+        <main className="skill-tree-minimal__tracks">
+          <div className="skill-tree-minimal__intro">
+            <span aria-hidden="true">✓</span>
+            <div>
+              <strong>{skill === "woodcutting" ? "First camp" : "First lantern"}</strong>
+              <small>Your engine is established. Choose the next path to improve.</small>
             </div>
-            <svg
-              aria-hidden="true"
-              className="skill-tree__connections"
-              height="700"
-              viewBox="0 0 1180 700"
-              width="1180"
-            >
-              {nodes.flatMap((node) =>
-                node.prerequisiteIds.flatMap((prerequisiteId) => {
-                  const source = nodesById.get(prerequisiteId);
-                  if (!source) return [];
-                  const targetAcquired = acquiredById.get(node.id) ?? false;
-                  const sourceAcquired = acquiredById.get(source.id) ?? false;
-                  const controlX = (source.x + node.x) / 2;
-                  const controlY = (source.y + node.y) / 2 - 24;
-                  return [
-                    <path
-                      className={
-                        targetAcquired
-                          ? "talent-branch talent-branch--grown"
-                          : sourceAcquired
-                            ? "talent-branch talent-branch--reachable"
-                            : "talent-branch"
-                      }
-                      d={`M ${source.x} ${source.y} Q ${controlX} ${controlY} ${node.x} ${node.y}`}
-                      key={`${source.id}-${node.id}`}
-                    />,
-                  ];
-                }),
-              )}
-            </svg>
-
-            {nodes.map((node) => {
-              const acquired = acquiredById.get(node.id) ?? false;
-              const prerequisitesMet = node.prerequisiteIds.every(
-                (id) => acquiredById.get(id),
-              );
-              const effect = node.effect;
-              const hasRequiredDie =
-                effect.type !== "face" ||
-                progression.inventory.some((die) => die.kind === effect.dieKind);
-              const isReachable = prerequisitesMet && hasRequiredDie;
-              const isAffordable =
-                node.cost !== undefined &&
-                progression.spendableXp >= node.cost;
-              const stateClass = acquired
-                ? "talent-node--acquired"
-                : isReachable
-                  ? isAffordable
-                    ? "talent-node--ready"
-                    : "talent-node--reachable"
-                  : "talent-node--locked";
-              return (
-                <motion.button
-                  animate={{
-                    scale: recentlyPurchased === node.id ? [1, 1.2, 1] : 1,
-                  }}
-                  aria-label={`${node.label}${acquired ? ", purchased" : ""}`}
-                  aria-pressed={selectedNode.id === node.id}
-                  className={`talent-node talent-node--${node.size} ${stateClass} ${selectedNode.id === node.id ? "talent-node--selected" : ""}`}
-                  key={node.id}
-                  onClick={() => setSelectedNodeId(node.id)}
-                  style={{ left: node.x, top: node.y }}
-                  transition={{ duration: 0.55, ease: "easeOut" }}
-                  type="button"
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.96 }}
-                >
-                  <span className="talent-node__medallion">
-                    <strong>{node.icon}</strong>
-                    {acquired ? <i aria-hidden="true">✓</i> : null}
-                  </span>
-                  <span className="talent-node__label">{node.label}</span>
-                  {node.cost !== undefined && !acquired ? (
-                    <small>{node.cost} XP</small>
-                  ) : null}
-                </motion.button>
-              );
-            })}
           </div>
-        </div>
+          <div className="skill-tree-minimal__grid">
+            {tracks.map((track) => (
+              <section className="upgrade-track" key={track.id}>
+                <header>
+                  <span className="eyebrow">{track.eyebrow}</span>
+                  <h3>{track.title}</h3>
+                  <p>{track.description}</p>
+                </header>
+                <ol>
+                  {track.nodes.map((node) => {
+                    const acquired = acquiredById.get(node.id) ?? false;
+                    const prerequisitesMet = node.prerequisiteIds.every(
+                      (id) => acquiredById.get(id),
+                    );
+                    const effect = node.effect;
+                    const hasRequiredDie =
+                      effect.type !== "face" ||
+                      progression.inventory.some(
+                        (die) => die.kind === effect.dieKind,
+                      );
+                    const reachable = prerequisitesMet && hasRequiredDie;
+                    const affordable =
+                      node.cost !== undefined &&
+                      progression.spendableXp >= node.cost;
+                    const stateClass = acquired
+                      ? "upgrade-node--acquired"
+                      : reachable
+                        ? affordable
+                          ? "upgrade-node--ready"
+                          : "upgrade-node--reachable"
+                        : "upgrade-node--locked";
+                    return (
+                      <li key={node.id}>
+                        <button
+                          aria-label={`${node.label}${acquired ? ", purchased" : ""}`}
+                          aria-pressed={selectedNode.id === node.id}
+                          className={`upgrade-node ${stateClass} ${selectedNode.id === node.id ? "upgrade-node--selected" : ""}`}
+                          onClick={() => setSelectedNodeId(node.id)}
+                          type="button"
+                        >
+                          <span className="upgrade-node__status" aria-hidden="true">
+                            {acquired ? "✓" : node.icon}
+                          </span>
+                          <span className="upgrade-node__copy">
+                            <strong>{node.label}</strong>
+                            <small>
+                              {acquired
+                                ? "Purchased"
+                                : !reachable
+                                  ? "Locked"
+                                  : affordable
+                                    ? "Ready to buy"
+                                    : "Available"}
+                            </small>
+                          </span>
+                          <span className="upgrade-node__cost">
+                            {acquired ? "Done" : node.cost !== undefined ? `${node.cost} XP` : "Gate"}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </section>
+            ))}
+          </div>
+        </main>
 
-        <aside className="talent-detail">
+        <aside className="talent-detail talent-detail--minimal">
           <span className="eyebrow">
             {selectedAcquired
               ? "Unlocked"
@@ -299,11 +308,6 @@ export function SkillTreeOverlay({
               Open Dice Rack →
             </button>
           ) : null}
-          <div className="talent-detail__legend">
-            <span><i className="legend-dot legend-dot--ready" /> Ready</span>
-            <span><i className="legend-dot legend-dot--owned" /> Purchased</span>
-            <span><i className="legend-dot" /> Locked</span>
-          </div>
         </aside>
       </div>
     </OverlayDialog>

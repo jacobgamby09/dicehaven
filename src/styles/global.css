@@ -4651,3 +4651,426 @@ progress::-moz-progress-bar {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Minimal overlay pass: reliable document flow first, thematic polish later. */
+.dice-rack,
+.skill-tree {
+  display: flex;
+  width: min(1160px, 100%);
+  flex-direction: column;
+  background: #f5f1e5;
+}
+
+.dice-rack__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  background: #f3efe3;
+  -webkit-overflow-scrolling: touch;
+}
+
+.rack-dice-grid {
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+}
+
+.skill-tree .overlay-dialog__header,
+.skill-tree--mining .overlay-dialog__header {
+  color: #29352d;
+  background: #f8f5e9;
+}
+
+.skill-tree .overlay-dialog__header h2 {
+  color: #29352d;
+}
+
+.skill-tree .overlay-dialog__header p,
+.skill-tree .overlay-dialog__header .eyebrow {
+  color: #707a6f;
+}
+
+.skill-tree .overlay-dialog__close {
+  border-color: rgba(55, 68, 52, 0.15);
+  color: #465248;
+  background: #eeebdf;
+}
+
+.skill-tree__balance {
+  color: #687064;
+  background: #ece9dc;
+  border-color: rgba(55, 68, 52, 0.14);
+  box-shadow: none;
+}
+
+.skill-tree__balance strong {
+  color: #3d5948;
+}
+
+.skill-tree-minimal__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  min-height: 0;
+  height: min(720px, calc(100dvh - 142px));
+  background: #f3efe3;
+}
+
+.skill-tree-minimal__tracks {
+  overflow-y: auto;
+  min-width: 0;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.skill-tree-minimal__intro {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(64, 83, 64, 0.15);
+  border-radius: 12px;
+  color: #435246;
+  background: #f9f6ec;
+}
+
+.skill-tree-minimal__intro > span {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: #f8f4df;
+  background: #5f7a63;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.skill-tree-minimal__intro strong,
+.skill-tree-minimal__intro small {
+  display: block;
+}
+
+.skill-tree-minimal__intro strong {
+  font-size: 0.76rem;
+}
+
+.skill-tree-minimal__intro small {
+  margin-top: 2px;
+  color: #7a8277;
+  font-size: 0.63rem;
+}
+
+.skill-tree-minimal__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+
+.upgrade-track {
+  overflow: hidden;
+  border: 1px solid rgba(64, 76, 60, 0.14);
+  border-radius: 14px;
+  background: #fbf8ef;
+  box-shadow: 0 6px 18px rgba(58, 54, 39, 0.05);
+}
+
+.upgrade-track > header {
+  padding: 15px 16px 13px;
+  border-bottom: 1px solid rgba(64, 76, 60, 0.1);
+  background: #f6f3e8;
+}
+
+.upgrade-track h3 {
+  margin: 0;
+  color: #354238;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+}
+
+.upgrade-track header p {
+  margin: 4px 0 0;
+  color: #778075;
+  font-size: 0.64rem;
+  line-height: 1.4;
+}
+
+.upgrade-track ol {
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+}
+
+.upgrade-track li + li {
+  border-top: 1px solid rgba(65, 78, 61, 0.08);
+}
+
+.upgrade-node {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 9px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: #465047;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.upgrade-node:hover {
+  background: #f1f1e4;
+}
+
+.upgrade-node[aria-pressed="true"] {
+  border-color: #77906f;
+  background: #edf2e6;
+}
+
+.upgrade-node__status {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid #c8c9bd;
+  border-radius: 9px;
+  color: #82887f;
+  background: #efede4;
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.upgrade-node__copy {
+  min-width: 0;
+}
+
+.upgrade-node__copy strong,
+.upgrade-node__copy small {
+  display: block;
+}
+
+.upgrade-node__copy strong {
+  overflow: hidden;
+  color: #39443b;
+  font-size: 0.7rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upgrade-node__copy small {
+  margin-top: 2px;
+  color: #8a9087;
+  font-size: 0.57rem;
+}
+
+.upgrade-node__cost {
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: #777d73;
+  background: #ebe9df;
+  font-size: 0.56rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.upgrade-node--ready .upgrade-node__status {
+  border-color: #91a878;
+  color: #436044;
+  background: #dfeacf;
+}
+
+.upgrade-node--ready .upgrade-node__cost {
+  color: #3f5b40;
+  background: #dfeacf;
+}
+
+.upgrade-node--acquired .upgrade-node__status {
+  border-color: #64806a;
+  color: #fffaf0;
+  background: #64806a;
+}
+
+.upgrade-node--acquired .upgrade-node__cost {
+  color: #536a58;
+  background: #e3ebdf;
+}
+
+.upgrade-node--locked {
+  opacity: 0.5;
+}
+
+.talent-detail--minimal,
+.skill-tree--mining .talent-detail--minimal {
+  overflow-y: auto;
+  padding: 24px;
+  border-left: 1px solid rgba(64, 76, 60, 0.14);
+  color: #3d483f;
+  background: #ece9dd;
+  box-shadow: none;
+}
+
+.talent-detail--minimal .eyebrow {
+  color: #778274;
+}
+
+.talent-detail--minimal .talent-detail__icon {
+  width: 58px;
+  height: 58px;
+  margin: 18px 0 14px;
+  border: 1px solid #9aa690;
+  color: #425a47;
+  background: #dfe6d7;
+  box-shadow: none;
+  font-size: 1rem;
+}
+
+.talent-detail--minimal h3 {
+  color: #334037;
+  font-size: 1.2rem;
+}
+
+.talent-detail--minimal > p {
+  min-height: 0;
+  color: #687269;
+}
+
+.talent-detail--minimal .talent-detail__cost {
+  border-color: rgba(64, 76, 60, 0.13);
+  color: #747c72;
+  background: #f4f1e7;
+}
+
+.talent-detail--minimal .talent-detail__cost strong {
+  color: #48604d;
+}
+
+.talent-detail--minimal .talent-detail__purchase {
+  border-color: #48614e;
+  background: #536f5a;
+  box-shadow: none;
+}
+
+@media (max-width: 760px) {
+  .game-overlay {
+    padding:
+      max(6px, env(safe-area-inset-top))
+      0
+      max(6px, env(safe-area-inset-bottom));
+  }
+
+  .overlay-dialog,
+  .dice-rack,
+  .skill-tree {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+
+  .overlay-dialog__header {
+    flex: 0 0 auto;
+    min-height: 82px;
+    padding: 14px 16px;
+  }
+
+  .dice-rack__body {
+    max-height: none;
+    padding: 10px;
+  }
+
+  .rack-loadout,
+  .rack-inventory,
+  .rack-inspector,
+  .rack-blueprint {
+    border-radius: 12px;
+    box-shadow: none;
+  }
+
+  .rack-dice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .skill-tree__balance {
+    top: 18px;
+    right: 60px;
+  }
+
+  .skill-tree-minimal__body {
+    display: flex;
+    height: auto;
+    flex: 1 1 auto;
+    flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .skill-tree-minimal__tracks {
+    order: 2;
+    overflow: visible;
+    padding: 10px;
+  }
+
+  .skill-tree-minimal__grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .talent-detail--minimal,
+  .skill-tree--mining .talent-detail--minimal {
+    position: sticky;
+    z-index: 7;
+    top: 0;
+    order: 1;
+    display: grid;
+    overflow: visible;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-content: center;
+    align-items: center;
+    padding: 10px 12px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(64, 76, 60, 0.16);
+    border-left: 0;
+    gap: 4px 10px;
+  }
+
+  .talent-detail--minimal .eyebrow,
+  .talent-detail--minimal h3 {
+    grid-column: 1;
+  }
+
+  .talent-detail--minimal h3 {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  .talent-detail--minimal .talent-detail__icon,
+  .talent-detail--minimal > p,
+  .talent-detail--minimal .talent-detail__cost {
+    display: none;
+  }
+
+  .talent-detail--minimal .talent-detail__purchase {
+    width: auto;
+    min-width: 124px;
+    grid-column: 2;
+    grid-row: 1 / 3;
+    min-height: 38px;
+  }
+
+  .talent-detail--minimal .talent-detail__rack-link {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 3px;
+    text-align: left;
+  }
+
+  .skill-tree-minimal__intro {
+    margin-bottom: 10px;
+  }
+}
