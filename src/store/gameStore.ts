@@ -19,13 +19,16 @@ import {
   type CombatZoneId,
 } from "../engine/combat";
 import {
+  getCombatCraftingRecipe,
+  getSkillCraftingRecipe,
+} from "../engine/crafting";
+import {
   createGatheringDieInstance,
   createStarterGatheringDie,
   getGatheringDieLevelRequirement,
   getGatheringDieSkill,
   getGatheringFaceUpgradeCost,
   getGatheringDice,
-  getTierTwoGatheringRecipe,
   isGatheringDieKind,
   type GatheringDieInstance,
   type GatheringSkillId,
@@ -33,7 +36,6 @@ import {
 import {
   canAfford,
   BARRACKS_COST,
-  COMBAT_DIE_RECIPES,
   FRONTIER_FORGE_COST,
   GATHERING_FACE_UPGRADE_COSTS,
   GATHERING_ROLL_SPEED_COSTS,
@@ -652,9 +654,10 @@ export const useGameStore = create<GameState>()(
       },
       craftTierTwoGatheringDie: (skill) => {
         set((state) => {
-          const recipe = getTierTwoGatheringRecipe(skill);
+          const recipe = getSkillCraftingRecipe(skill);
 
           if (
+            !state.buildings.workshop ||
             !state.combat.forestTrophy ||
             !canAfford(state.resources, recipe.cost)
           ) {
@@ -672,7 +675,7 @@ export const useGameStore = create<GameState>()(
           }
           const craftedDie = createGatheringDieInstance(
             skill,
-            recipe.kind,
+            recipe.itemId,
             nextIndex,
           );
 
@@ -790,7 +793,7 @@ export const useGameStore = create<GameState>()(
       },
       craftCombatDie: (dieId) => {
         set((state) => {
-          const recipe = COMBAT_DIE_RECIPES.find((candidate) => candidate.id === dieId);
+          const recipe = getCombatCraftingRecipe(dieId);
           const stationReady =
             recipe?.station === "frontierForge"
               ? state.buildings.frontierForge

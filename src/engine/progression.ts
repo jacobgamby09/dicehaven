@@ -1,4 +1,3 @@
-import type { CombatDieId, CombatRole } from "./combat";
 import type { ResourceId } from "./roll";
 
 export const SKILL_XP_PER_ROLL = 1;
@@ -17,15 +16,6 @@ export const GATHERING_SLOT_COSTS = {
 export const MAX_GATHERING_SLOTS = 3;
 
 export type ResourceCost = Partial<Record<ResourceId, number>>;
-
-export interface CombatDieRecipe {
-  id: CombatDieId;
-  name: string;
-  role: CombatRole;
-  description: string;
-  cost: ResourceCost;
-  station: "workshop" | "frontierForge";
-}
 
 export function getGatheringRollInterval(rollSpeedLevel: number): number {
   const safeLevel = Math.max(
@@ -61,49 +51,6 @@ export const FRONTIER_FORGE_COST = {
   copper: 25,
   monsterParts: 20,
 } as const satisfies ResourceCost;
-
-export const COMBAT_DIE_RECIPES: readonly CombatDieRecipe[] = [
-  {
-    id: "trainingSword",
-    name: "Training Sword",
-    role: "Damage",
-    description: "Reliable early damage for Forest Edge.",
-    cost: { wood: 25, stone: 15 },
-    station: "workshop",
-  },
-  {
-    id: "woodenShield",
-    name: "Wooden Shield",
-    role: "Block",
-    description: "Stores block against the enemy's next attack.",
-    cost: { wood: 20, stone: 25 },
-    station: "workshop",
-  },
-  {
-    id: "torch",
-    name: "Torch",
-    role: "Utility",
-    description: "Improves visibility and future loot rolls.",
-    cost: { wood: 30, stone: 10 },
-    station: "workshop",
-  },
-  {
-    id: "copperLongsword",
-    name: "Copper Longsword",
-    role: "Damage",
-    description: "Tier 2 damage for the Wolf Den.",
-    cost: { oak: 8, copper: 18, monsterParts: 8 },
-    station: "frontierForge",
-  },
-  {
-    id: "oakguardShield",
-    name: "Oakguard Shield",
-    role: "Block",
-    description: "Tier 2 protection for heavier attacks.",
-    cost: { oak: 18, copper: 8, monsterParts: 8 },
-    station: "frontierForge",
-  },
-] as const;
 
 export function canAfford(
   resources: Record<ResourceId, number>,

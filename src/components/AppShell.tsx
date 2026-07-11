@@ -10,6 +10,7 @@ interface AppShellProps extends PropsWithChildren {
   activeSkill: GatheringSkillId;
   barracksBuilt: boolean;
   combatLevel: number;
+  craftableRecipeCount: number;
   forestTrophy: boolean;
   frontierForgeBuilt: boolean;
   isMenuOpen: boolean;
@@ -31,6 +32,7 @@ export function AppShell({
   activeSkill,
   barracksBuilt,
   combatLevel,
+  craftableRecipeCount,
   children,
   forestTrophy,
   frontierForgeBuilt,
@@ -54,6 +56,7 @@ export function AppShell({
         activeView={activeView}
         barracksBuilt={barracksBuilt}
         combatLevel={combatLevel}
+        craftableRecipeCount={craftableRecipeCount}
         forestTrophy={forestTrophy}
         frontierForgeBuilt={frontierForgeBuilt}
         isOpen={isMenuOpen}

@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { AppShell } from "./components/AppShell";
+import {
+  getVisibleCraftingRecipes,
+  isCraftingRecipeCraftable,
+} from "./engine/crafting";
 import { canAfford, getLevelProgress, WORKSHOP_COST } from "./engine/progression";
 import { useCombatClock } from "./hooks/useCombatClock";
 import { useRollClock } from "./hooks/useRollClock";
 import { CombatPage } from "./pages/CombatPage";
+import { CraftingPage } from "./pages/CraftingPage";
 import { MiningPage } from "./pages/MiningPage";
-import { PreviewPage } from "./pages/PreviewPage";
 import { SettlementPage } from "./pages/SettlementPage";
 import { WoodcuttingPage } from "./pages/WoodcuttingPage";
 import { useGameStore } from "./store/gameStore";
@@ -44,6 +48,16 @@ export function App(): React.JSX.Element {
     (total, amount) => total + amount,
     0,
   );
+  const craftingUnlocks = {
+    forestTrophy,
+    frontierForgeBuilt,
+    workshopBuilt,
+  };
+  const craftableRecipeCount = getVisibleCraftingRecipes(
+    craftingUnlocks,
+  ).filter((recipe) =>
+    isCraftingRecipeCraftable(recipe, craftingUnlocks, resources),
+  ).length;
 
   const makeGatheringActive = (skill: "woodcutting" | "mining") => {
     if (isInCombat) {
@@ -71,7 +85,9 @@ export function App(): React.JSX.Element {
 
   switch (activeView) {
     case "settlement":
-      page = <SettlementPage />;
+      page = (
+        <SettlementPage onOpenCrafting={() => setActiveView("crafting")} />
+      );
       break;
     case "combat":
       page = (
@@ -80,6 +96,11 @@ export function App(): React.JSX.Element {
           onNavigate={setActiveView}
           onOpenSettlement={() => setActiveView("settlement")}
         />
+      );
+      break;
+    case "crafting":
+      page = (
+        <CraftingPage onOpenSettlement={() => setActiveView("settlement")} />
       );
       break;
     case "mining":
@@ -93,15 +114,6 @@ export function App(): React.JSX.Element {
           onTogglePause={togglePause}
           phase={clock.phase}
           progress={clock.progress}
-        />
-      );
-      break;
-    case "recipes":
-      page = (
-        <PreviewPage
-          description="Cross-skill goals that turn gathered resources into new possibilities."
-          eyebrow="Progression"
-          title="Recipes"
         />
       );
       break;
@@ -126,6 +138,7 @@ export function App(): React.JSX.Element {
       activeView={activeView}
       barracksBuilt={barracksBuilt}
       combatLevel={combatLevel}
+      craftableRecipeCount={craftableRecipeCount}
       forestTrophy={forestTrophy}
       frontierForgeBuilt={frontierForgeBuilt}
       isInCombat={isInCombat}

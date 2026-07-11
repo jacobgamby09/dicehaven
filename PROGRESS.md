@@ -8,6 +8,33 @@ Dette er den løbende implementeringslog for greenfield-versionen i denne mappe.
 - **M1 — Combat vertical slice:** Spilbar end-to-end gennem Forest Brute, Tier 2 crafting, Frontier Forge og første Wolf Den-encounter. Næste checkpoint er bruger-playtest og lyd/juice baseret på den faktiske oplevelse.
 - **M2+ — Skill Tree-mekanikker, sustain og dybere settlement:** Ikke påbegyndt.
 
+## 2026-07-11 — Dedikeret Crafting-katalog
+
+### Tilføjet
+
+- Ny **Crafting**-side i sidemenuen. Den står synligt som `Build Workshop` før unlock og viser derefter antal recipes, der kan craftes nu.
+- Crafting har separate **Combat Dice**- og **Skill Dice**-tabs med fritekstsøgning samt rolle/skill-, tier- og craftable-filtre.
+- Kompakte recipe-rækker viser navn, kategori, tier, pris, owned-antal og aktuel status; ét separat detailpanel viser beskrivelse, alle seks faces, station, equip-level og konkret `owned / required` for materialer.
+- Ny fælles, datadrevet crafting-model samler kategori, item-id, rolle/skill, tier, station, blueprint-gate, pris og equip-level for alle fysiske dice-recipes.
+- Rene selectors afgør recipe-visibility og craftability. Recipes bag en manglende settlement-bygning eller et uopdaget blueprint vises ikke i kataloget.
+- Crafting-gaten forklarer Workshop-kravet og linker direkte til Settlement.
+
+### Ændret
+
+- **Combat** indeholder ikke længere recipes eller craft-knapper. Det nye **Combat Arsenal** viser kun ejede terninger og håndterer inspection samt equip.
+- **Dice Rack** indeholder ikke længere Tier 2-crafting. Overlayet fokuserer nu udelukkende på ejede skill dice, faces og loadout.
+- Oakheart Axe, Copper Prospector og alle craftable Combat Dice fremstilles nu fra samme Crafting-side.
+- Workshop- og Frontier Forge-kortene viser deres konkrete recipe-unlocks og fortæller, at de nye recipes lander i Crafting.
+- Skill Dice kræver nu både Workshop-systemet og deres Forest Brute-blueprint; Combat- og skill-levels er fortsat equip-gates og blokerer ikke crafting.
+- Det gamle Recipes-placeholder er fjernet.
+
+### Verificeret
+
+- Ny selector-suite dækker skjulte building-locked recipes, Workshop T1-sættet, boss-unlocked Skill Dice, Forge-unlocked T2 Combat Dice samt craftability uafhængigt af equip-level.
+- Store-tests bekræfter fortsat fysisk crafting, resource spend, bench-adfærd, multiple copies og level-gates.
+- Browser-QA bekræfter den låste Crafting-side, direkte navigation til Settlement, konkrete building-unlocks samt fravær af overflow og Vite error overlay.
+- Production-build og hele testsuiten består: 8 testfiler / 60 tests.
+
 ## 2026-07-11 — Direkte Dice Rack-loadout
 
 ### Ændret

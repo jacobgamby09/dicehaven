@@ -7,7 +7,13 @@ import {
 import { useGameStore } from "../store/gameStore";
 import { formatCost, formatMissingCost } from "../ui/formatCost";
 
-export function SettlementPage(): React.JSX.Element {
+interface SettlementPageProps {
+  onOpenCrafting: () => void;
+}
+
+export function SettlementPage({
+  onOpenCrafting,
+}: SettlementPageProps): React.JSX.Element {
   const resources = useGameStore((state) => state.resources);
   const workshopBuilt = useGameStore((state) => state.buildings.workshop);
   const barracksBuilt = useGameStore((state) => state.buildings.barracks);
@@ -83,16 +89,27 @@ export function SettlementPage(): React.JSX.Element {
                 <small>{workshopBuilt ? "Built" : "Available"}</small>
               </div>
             </div>
-            <p>Unlock Training Sword, Wooden Shield and Torch recipes.</p>
+            <p>
+              Opens the Crafting tab and unlocks your first three Combat Dice
+              recipes.
+            </p>
+            <ul className="building-card__unlocks">
+              <li>Training Sword</li>
+              <li>Wooden Shield</li>
+              <li>Torch</li>
+            </ul>
+            <small className="building-card__destination">
+              New recipes appear in Crafting.
+            </small>
             <span className="building-card__cost">{formatCost(WORKSHOP_COST)}</span>
             <button
               className="primary-button"
-              disabled={!canBuildWorkshop}
-              onClick={purchaseWorkshop}
+              disabled={!workshopBuilt && !canBuildWorkshop}
+              onClick={workshopBuilt ? onOpenCrafting : purchaseWorkshop}
               type="button"
             >
               {workshopBuilt
-                ? "Workshop built"
+                ? "Open Crafting"
                 : canBuildWorkshop
                   ? "Build Workshop"
                   : formatMissingCost(resources, WORKSHOP_COST)}
@@ -154,8 +171,15 @@ export function SettlementPage(): React.JSX.Element {
               </div>
             </div>
             <p>
-              Unlock Copper Longsword, Oakguard Shield and the Wolf Den expedition.
+              Unlocks two Tier 2 Combat Dice recipes and the Wolf Den expedition.
             </p>
+            <ul className="building-card__unlocks">
+              <li>Copper Longsword</li>
+              <li>Oakguard Shield</li>
+            </ul>
+            <small className="building-card__destination">
+              New recipes appear in Crafting.
+            </small>
             <span className="building-card__cost">
               {forestTrophy
                 ? formatCost(FRONTIER_FORGE_COST)
@@ -163,12 +187,14 @@ export function SettlementPage(): React.JSX.Element {
             </span>
             <button
               className="primary-button"
-              disabled={!canBuildFrontierForge}
-              onClick={purchaseFrontierForge}
+              disabled={!frontierForgeBuilt && !canBuildFrontierForge}
+              onClick={
+                frontierForgeBuilt ? onOpenCrafting : purchaseFrontierForge
+              }
               type="button"
             >
               {frontierForgeBuilt
-                ? "Frontier Forge built"
+                ? "Open Crafting"
                 : !forestTrophy
                   ? "Defeat Forest Brute"
                   : canBuildFrontierForge

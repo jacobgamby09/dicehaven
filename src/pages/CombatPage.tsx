@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
+import { CombatArsenal } from "../components/CombatArsenal";
 import { CombatDiceTray } from "../components/CombatDiceTray";
 import { CombatKillToast } from "../components/CombatKillToast";
 import {
@@ -7,21 +7,14 @@ import {
   COMBAT_DIE_IDS,
   COMBAT_ENEMIES,
   PLAYER_MAX_HP,
-  type CombatDieDefinition,
-  type CombatDieId,
-  type CombatFace,
 } from "../engine/combat";
-import {
-  canAfford,
-  COMBAT_DIE_RECIPES,
-  getLevelProgress,
-} from "../engine/progression";
+import { getLevelProgress } from "../engine/progression";
 import type { CombatClock } from "../hooks/useCombatClock";
 import {
   type CombatResult,
   useGameStore,
 } from "../store/gameStore";
-import { formatCost, formatMissingCost } from "../ui/formatCost";
+import { combatRoleIcon } from "../ui/combatDie";
 import type { ViewId } from "../ui/navigation";
 import { PROGRESSION_UNLOCK_LABELS } from "../ui/unlockLabels";
 
@@ -29,36 +22,6 @@ interface CombatPageProps {
   clock: CombatClock;
   onNavigate: (view: ViewId) => void;
   onOpenSettlement: () => void;
-}
-
-function roleIcon(die: CombatDieDefinition): string {
-  if (die.role === "Damage") return "D";
-  if (die.role === "Block") return "B";
-  return "U";
-}
-
-function countEquipped(
-  loadout: readonly (CombatDieId | null)[],
-  dieId: CombatDieId,
-): number {
-  return loadout.filter((equippedDieId) => equippedDieId === dieId).length;
-}
-
-function faceText(face: CombatFace): string {
-  if (face.type === "damage") return `${face.amount} Damage`;
-  if (face.type === "block") return `${face.amount} Block`;
-  return face.amount > 0 ? "Light" : "Dark";
-}
-
-function faceMark(face: CombatFace): string {
-  if (face.type === "damage") return face.amount > 0 ? `⚔${face.amount}` : "—";
-  if (face.type === "block") return face.amount > 0 ? `◆${face.amount}` : "—";
-  return face.amount > 0 ? "✦" : "—";
-}
-
-function averageFaceValue(die: CombatDieDefinition): string {
-  const total = die.faces.reduce((sum, face) => sum + face.amount, 0);
-  return (total / die.faces.length).toFixed(2);
 }
 
 function defeatAdvice(reason: CombatResult["defeatReason"]): string | null {
@@ -79,25 +42,16 @@ export function CombatPage({
   onNavigate,
   onOpenSettlement,
 }: CombatPageProps): React.JSX.Element {
-  const [inspectedDieId, setInspectedDieId] =
-    useState<CombatDieId>("trainingSword");
   const reduceMotion = useReducedMotion();
-  const resources = useGameStore((state) => state.resources);
   const workshopBuilt = useGameStore((state) => state.buildings.workshop);
   const frontierForgeBuilt = useGameStore(
     (state) => state.buildings.frontierForge,
   );
   const combat = useGameStore((state) => state.combat);
-  const craftCombatDie = useGameStore((state) => state.craftCombatDie);
-  const equipCombatDie = useGameStore((state) => state.equipCombatDie);
   const unequipCombatSlot = useGameStore((state) => state.unequipCombatSlot);
   const startCombat = useGameStore((state) => state.startCombat);
   const retreatFromCombat = useGameStore((state) => state.retreatFromCombat);
   const levelProgress = getLevelProgress(combat.lifetimeXp);
-  const ownedDiceCount = Object.values(combat.inventory).reduce(
-    (total, amount) => total + amount,
-    0,
-  );
   const emptySlotCount = combat.loadout.filter((dieId) => dieId === null).length;
   const hasDamageDie = combat.loadout.some(
     (dieId) => dieId !== null && COMBAT_DICE[dieId].role === "Damage",
@@ -107,9 +61,6 @@ export function CombatPage({
   const bossIsReady = combat.zoneProgress >= 20 && !combat.forestTrophy;
   const currentZoneName =
     combat.session?.zoneId === "wolfDen" ? "Wolf Den" : "Forest Edge";
-  const inspectedDie = COMBAT_DICE[inspectedDieId];
-  const inspectedOwned = combat.inventory[inspectedDieId];
-  const inspectedIsLocked = inspectedDie.levelRequirement > levelProgress.level;
   const runDiceFound = combat.session
     ? Object.values(combat.session.diceGained).reduce(
         (total, amount) => total + (amount ?? 0),
@@ -130,7 +81,7 @@ export function CombatPage({
         <div>
           <span className="eyebrow">World</span>
           <h1>Combat</h1>
-          <p>Craft or discover dice, meet their level gates, and build a loadout.</p>
+          <p>Build a loadout, enter dangerous zones and discover new physical dice.</p>
         </div>
         {workshopBuilt ? (
           <div className="combat-level-badge">
@@ -151,7 +102,7 @@ export function CombatPage({
           <div className="combat-gate__copy">
             <span className="lab-pill">Preparation required</span>
             <h2>Build the Workshop</h2>
-            <p>Your crews need somewhere to turn Wood and Stone into combat dice.</p>
+            <p>Unlock Crafting and prepare your crew's first combat loadout.</p>
             <button className="primary-button" onClick={onOpenSettlement} type="button">
               Open Settlement
             </button>
@@ -417,7 +368,9 @@ export function CombatPage({
                       onClick={() => unequipCombatSlot(index)}
                       type="button"
                     >
-                      <b aria-hidden="true">{roleIcon(COMBAT_DICE[dieId])}</b>
+                      <b aria-hidden="true">
+                        {combatRoleIcon(COMBAT_DICE[dieId].role)}
+                      </b>
                       <span>
                         <strong>{COMBAT_DICE[dieId].name}</strong>
                         <small>Click to remove</small>
@@ -430,141 +383,7 @@ export function CombatPage({
             </div>
           </section>
 
-          <section aria-labelledby="combat-inventory-title" className="combat-recipes">
-            <header>
-              <div>
-                <span className="eyebrow">Dice collection</span>
-                <h2 id="combat-inventory-title">Inventory & Workshop</h2>
-              </div>
-              <span className="recipe-counter">{ownedDiceCount} dice owned</span>
-            </header>
-            <article className="combat-die-inspector">
-              <div
-                aria-hidden="true"
-                className={`combat-die-inspector__die combat-die-inspector__die--${inspectedDie.role.toLowerCase()}`}
-              >
-                {roleIcon(inspectedDie)}
-              </div>
-              <div className="combat-die-inspector__copy">
-                <span className="eyebrow">Inspecting · {inspectedDie.role}</span>
-                <h3>{inspectedDie.name}</h3>
-                <p>{inspectedDie.description}</p>
-                <div className="combat-die-inspector__meta">
-                  <span>Level {inspectedDie.levelRequirement}</span>
-                  <span>Average {averageFaceValue(inspectedDie)}</span>
-                  <span>Owned {inspectedOwned}</span>
-                  <span>{inspectedDie.sourceLabel}</span>
-                </div>
-              </div>
-              <div aria-label={`${inspectedDie.name} faces`} className="combat-face-grid">
-                {inspectedDie.faces.map((face, index) => (
-                  <span
-                    aria-label={`Face ${index + 1}: ${faceText(face)}`}
-                    className={`combat-face combat-face--${face.type}`}
-                    key={`${inspectedDie.id}-face-${index}`}
-                    title={faceText(face)}
-                  >
-                    {faceMark(face)}
-                  </span>
-                ))}
-                {inspectedIsLocked ? (
-                  <strong>Equip at Combat Level {inspectedDie.levelRequirement}</strong>
-                ) : (
-                  <strong>Ready to equip when owned</strong>
-                )}
-              </div>
-            </article>
-            <div className="combat-recipe-grid combat-inventory-grid">
-              {COMBAT_DIE_IDS.map((dieId) => {
-                const die = COMBAT_DICE[dieId];
-                const recipe = COMBAT_DIE_RECIPES.find(
-                  (candidate) => candidate.id === dieId,
-                );
-                const owned = combat.inventory[dieId];
-                const equipped = countEquipped(combat.loadout, dieId);
-                const isLevelLocked = die.levelRequirement > levelProgress.level;
-                const canEquip =
-                  !isLevelLocked && owned > equipped && emptySlotCount > 0;
-                const stationReady =
-                  recipe?.station === "frontierForge"
-                    ? frontierForgeBuilt
-                    : workshopBuilt;
-                const canCraft =
-                  recipe !== undefined &&
-                  stationReady &&
-                  canAfford(resources, recipe.cost);
-
-                return (
-                  <article
-                    className={`combat-recipe-card${owned > 0 ? " combat-recipe-card--crafted" : ""}${isLevelLocked ? " combat-recipe-card--locked" : ""}${recipe?.station === "frontierForge" ? " combat-recipe-card--tier-two" : ""}`}
-                    key={die.id}
-                  >
-                    <div className="combat-recipe-card__die" aria-hidden="true">
-                      {roleIcon(die)}
-                    </div>
-                    <div className="combat-die-meta">
-                      <span className="combat-role">{die.role}</span>
-                      <span>Level {die.levelRequirement}</span>
-                    </div>
-                    <h3>{die.name}</h3>
-                    <p>{die.description}</p>
-                    <small className="combat-source">{die.sourceLabel}</small>
-                    <strong>Owned {owned} · Equipped {equipped}</strong>
-
-                    <button
-                      aria-pressed={inspectedDieId === die.id}
-                      className="combat-inspect-button"
-                      onClick={() => setInspectedDieId(die.id)}
-                      type="button"
-                    >
-                      {inspectedDieId === die.id ? "Inspecting faces" : "Inspect faces"}
-                    </button>
-
-                    {isLevelLocked ? (
-                      <span className="combat-level-lock">
-                        Requires Combat Level {die.levelRequirement}
-                      </span>
-                    ) : (
-                      <button
-                        className="secondary-button"
-                        disabled={!canEquip}
-                        onClick={() => equipCombatDie(die.id)}
-                        type="button"
-                      >
-                        {owned <= equipped
-                          ? owned === 0
-                            ? "Not owned"
-                            : "All copies equipped"
-                          : emptySlotCount === 0
-                            ? "Loadout full"
-                            : "Equip die"}
-                      </button>
-                    )}
-
-                    {recipe ? (
-                      <div className="combat-craft-row">
-                        <span>{formatCost(recipe.cost)}</span>
-                        <button
-                          className="secondary-button"
-                          disabled={!canCraft}
-                          onClick={() => craftCombatDie(recipe.id)}
-                          type="button"
-                        >
-                          {!stationReady
-                            ? "Build Frontier Forge"
-                            : canCraft
-                            ? owned > 0
-                              ? "Craft another"
-                              : "Craft die"
-                            : formatMissingCost(resources, recipe.cost)}
-                        </button>
-                      </div>
-                    ) : null}
-                  </article>
-                );
-              })}
-            </div>
-          </section>
+          <CombatArsenal onOpenCrafting={() => onNavigate("crafting")} />
         </>
       )}
     </div>

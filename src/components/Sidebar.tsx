@@ -6,6 +6,7 @@ interface SidebarProps {
   activeView: ViewId;
   barracksBuilt: boolean;
   combatLevel: number;
+  craftableRecipeCount: number;
   forestTrophy: boolean;
   frontierForgeBuilt: boolean;
   isOpen: boolean;
@@ -38,7 +39,7 @@ const WORLD_ITEMS: readonly NavItem[] = [
 ];
 
 const PROGRESSION_ITEMS: readonly NavItem[] = [
-  { id: "recipes", icon: "R", label: "Recipes", meta: "3 new" },
+  { id: "crafting", icon: "⚒", label: "Crafting" },
 ];
 
 export function Sidebar({
@@ -46,6 +47,7 @@ export function Sidebar({
   activeView,
   barracksBuilt,
   combatLevel,
+  craftableRecipeCount,
   forestTrophy,
   frontierForgeBuilt,
   isOpen,
@@ -110,6 +112,12 @@ export function Sidebar({
           : workshopBuilt
           ? `${ownedCombatDiceCount} dice owned`
           : "Workshop required";
+      } else if (item.id === "crafting") {
+        meta = !workshopBuilt
+          ? "Build Workshop"
+          : craftableRecipeCount > 0
+            ? `${craftableRecipeCount} craftable`
+            : "Browse recipes";
       }
 
       return (

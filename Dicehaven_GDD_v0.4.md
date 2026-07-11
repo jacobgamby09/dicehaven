@@ -23,6 +23,7 @@ Sprogregel: GDD'en er på dansk (arbejdssprog). **Al spiller-vendt tekst i spill
 *Revision 2026-07-11 (4): Roll Speed bruger en custom Safari-sikker fill frem for native progress. Timeren er en full-width del af dice stage, står fuld under selve kastet og nulstiller derefter til næste cyklus (§12).*
 *Revision 2026-07-11 (5): Roll Speed-timeren er flyttet ind i Dice Tray'ens eksisterende lyse kontrolsektion under headeren. Den er dermed visuelt adskilt fra filt-scenen uden at fremstå som et ekstra kort oven på terningerne (§12).*
 *Revision 2026-07-11 (6): Dice Rack bruger inventoryet som primær loadout-flade. Valg af en fysisk terning viser straks equip/unequip eller et eksplicit valg af den slot, der skal erstattes; den dobbelte Active Dice Pool-oversigt er fjernet (§12).*
+*Revision 2026-07-11 (7): Al fysisk dice-crafting er samlet i en dedikeret Crafting-side med Combat Dice/Skill Dice-tabs. Workshop åbner systemet; recipes bag manglende bygninger eller undiscovered blueprints skjules, mens Settlement forklarer de kommende unlocks (§10.1, §12).*
 
 ---
 
@@ -234,6 +235,14 @@ Kanonisk M1-M3-sæt (effekter er mål, ikke endelige tal):
 | **Barracks** | 80 wood + 60 stone + 15 monster parts + **Forest Trophy-gate** | +1 combat slot; Combat-talenter følger i M2 | M1/M2 |
 | **Training Yard** | Wood + stone + iron + parts | Combat roll speed-gear, boss practice | Act 2 |
 
+## 10.1 Crafting-katalog og stations-unlocks
+
+Crafting er et dedikeret tværgående system, men **ikke en aktiv skill i M1-M3**. Alle recipes er instant og skaber fysiske terninger. Workshop åbner Crafting-siden; kataloget har to primære tabs: **Combat Dice** og **Skill Dice**. Combat-tabben filtrerer efter rolle og tier, mens Skill-tabben filtrerer efter gathering-skill og tier.
+
+Crafting ejer fremstillingen; **Combat Arsenal** og **Dice Rack** ejer inspection, ownership og equip. Buildings bygges fortsat i Settlement. En recipe vises kun, når dens station er bygget og blueprintet er opdaget. Manglende ressourcer skjuler aldrig en kendt recipe, men vises konkret som `owned / required`. Equip-level er et brugskrav og må aldrig blokere selve craftingen.
+
+Settlement er spillerens horizon: hvert stationskort beskriver recipe-kategorien, antal og centrale eksempler, før bygningen købes. Når stationen bygges, dukker recipes op i Crafting; kataloget viser ikke et voksende grid af irrelevante building-locked kort.
+
 **Passiv produktion** unlockes efter første boss via bygninger: inactive skills producerer 5-10% (mid: 15-30%, late: 40-60%). Aktiv skill skal altid være mindst 2× bedste passive.
 
 ---
@@ -319,8 +328,9 @@ Bygger videre på det implementerede mobil-first-layout (topbar med ressource-co
 
 Udvidelser pr. milestone:
 
-* **Sidemenuen** er navigationen til Skills, **Combat**, **Settlement** og tværgående opskrifter. Skill Trees åbnes lokalt fra den relevante skill-header, så konteksten aldrig mistes.
-* **Dice Rack:** stort overlay med fysisk inventory som primær flade, filtre, tydelig equipped-status, direkte equip/unequip/swap efter valg, face-inspector og synlige Tier 2-blueprints. Ledige slots vælges automatisk; når loadoutet er fuldt, skal spilleren eksplicit vælge den terning, der erstattes. Tomme slots producerer og træner ikke.
+* **Sidemenuen** er navigationen til Skills, **Combat**, **Settlement** og **Crafting**. Crafting står synligt med `Build Workshop` før unlock og viser derefter antal craftable recipes. Skill Trees åbnes lokalt fra den relevante skill-header, så konteksten aldrig mistes.
+* **Crafting:** dedikeret katalog med Combat Dice/Skill Dice-tabs, fritekstsøgning, rolle/skill/tier/craftable-filtre, kompakte recipe-rækker og ét fokuseret detail-/craft-panel. Kataloget viser kun station- og blueprint-unlocked recipes; cards gentager ikke inventory- og equip-funktioner.
+* **Dice Rack:** stort overlay med fysisk inventory som primær flade, filtre, tydelig equipped-status, direkte equip/unequip/swap efter valg og face-inspector. Ledige slots vælges automatisk; når loadoutet er fuldt, skal spilleren eksplicit vælge den terning, der erstattes. Tomme slots producerer og træner ikke. Nye fysiske dice craftes i Crafting.
 * **Skill Tree:** minimalistisk overlay med fire upgrade-spor, tydelige locked/reachable/ready/purchased-states og et detailpanel med før/efter, pris og krav. Ingen fast canvas eller todimensionel panorering i første stabile version.
 * **Roll Speed-HUD:** ligger som en integreret full-width kontrolrække i Dice Tray'ens lyse headersektion, direkte over filt-scenen. Den bruger en custom CSS-fill frem for browserens native progress-element, viser live countdown, pause/inactive-state og aktuelt interval, og står fuld under `Rolling…`, før næste cyklus begynder.
 * **XP-enheder:** XP-balancer må aldrig vises som nøgne tal. Skill Tree-headeren viser eksempelvis `264 XP`, også når den forklarende label skjules på mobil.

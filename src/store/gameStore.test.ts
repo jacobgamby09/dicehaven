@@ -195,6 +195,10 @@ describe("game store", () => {
   it("crafts a Tier 2 gathering die from T1 resources and Monster Parts", () => {
     useGameStore.setState({
       resources: { wood: 120, oak: 0, stone: 80, copper: 0, monsterParts: 12 },
+      buildings: {
+        ...useGameStore.getState().buildings,
+        workshop: true,
+      },
       combat: {
         ...useGameStore.getState().combat,
         forestTrophy: true,
@@ -219,6 +223,25 @@ describe("game store", () => {
   it("does not craft Tier 2 gathering dice before the Forest blueprint", () => {
     useGameStore.setState({
       resources: { wood: 120, oak: 0, stone: 80, copper: 0, monsterParts: 12 },
+      buildings: {
+        ...useGameStore.getState().buildings,
+        workshop: true,
+      },
+    });
+
+    useGameStore.getState().craftTierTwoGatheringDie("woodcutting");
+
+    expect(useGameStore.getState().woodcutting.inventory).toHaveLength(1);
+    expect(useGameStore.getState().resources.wood).toBe(120);
+  });
+
+  it("does not craft Skill Dice before the Workshop opens Crafting", () => {
+    useGameStore.setState({
+      resources: { wood: 120, oak: 0, stone: 80, copper: 0, monsterParts: 12 },
+      combat: {
+        ...useGameStore.getState().combat,
+        forestTrophy: true,
+      },
     });
 
     useGameStore.getState().craftTierTwoGatheringDie("woodcutting");
@@ -230,6 +253,10 @@ describe("game store", () => {
   it("keeps crafted Tier 2 dice on the bench until their level gate is met", () => {
     useGameStore.setState({
       resources: { wood: 80, oak: 0, stone: 120, copper: 0, monsterParts: 12 },
+      buildings: {
+        ...useGameStore.getState().buildings,
+        workshop: true,
+      },
       combat: {
         ...useGameStore.getState().combat,
         forestTrophy: true,

@@ -4,13 +4,11 @@ import {
   getGatheringDieLevelRequirement,
   getGatheringDieName,
   getGatheringDieTier,
-  getTierTwoGatheringRecipe,
   type GatheringSkillId,
 } from "../engine/content";
-import { canAfford, getLevelProgress } from "../engine/progression";
+import { getLevelProgress } from "../engine/progression";
 import { RESOURCE_SHORT_LABELS } from "../engine/resources";
 import { useGameStore } from "../store/gameStore";
-import { formatCost, formatMissingCost } from "../ui/formatCost";
 import { OverlayDialog } from "./OverlayDialog";
 
 type RackFilter = "all" | "tier-one" | "tier-two" | "benched";
@@ -34,13 +32,8 @@ export function DiceRackOverlay({
   skill,
 }: DiceRackOverlayProps): React.JSX.Element {
   const progression = useGameStore((state) => state[skill]);
-  const resources = useGameStore((state) => state.resources);
-  const forestTrophy = useGameStore((state) => state.combat.forestTrophy);
   const equipDie = useGameStore((state) => state.equipGatheringDie);
   const unequipSlot = useGameStore((state) => state.unequipGatheringSlot);
-  const craftTierTwoDie = useGameStore(
-    (state) => state.craftTierTwoGatheringDie,
-  );
   const [filter, setFilter] = useState<RackFilter>("all");
   const [selectedDieId, setSelectedDieId] = useState(
     progression.loadout.find((id): id is string => id !== null) ??
@@ -63,12 +56,6 @@ export function DiceRackOverlay({
     progression.inventory
       .slice(0, progression.inventory.indexOf(selectedDie) + 1)
       .filter((die) => die.kind === selectedDie.kind).length;
-  const recipe = getTierTwoGatheringRecipe(skill);
-  const ownedTierTwoDice = progression.inventory.filter(
-    (die) => die.kind === recipe.kind,
-  ).length;
-  const canCraft = forestTrophy && canAfford(resources, recipe.cost);
-
   const filteredDice = progression.inventory.filter((die) => {
     const tier = getGatheringDieTier(die.kind);
     if (filter === "tier-one") return tier === 1;
@@ -109,39 +96,45 @@ export function DiceRackOverlay({
                 </button>
               ))}
             </div>
-            <div className="rack-dice-grid">
-              {filteredDice.map((die) => {
-                const slot = progression.loadout.indexOf(die.id);
-                const ordinal = progression.inventory
-                  .slice(0, progression.inventory.indexOf(die) + 1)
-                  .filter((candidate) => candidate.kind === die.kind).length;
-                const requirement = getGatheringDieLevelRequirement(die.kind);
-                const isSelected = selectedDie.id === die.id;
-                return (
-                  <button
-                    aria-pressed={isSelected}
-                    className={`rack-die-card ${isSelected ? "rack-die-card--selected" : ""} ${getGatheringDieTier(die.kind) === 2 ? "rack-die-card--specialist" : ""}`}
-                    key={die.id}
-                    onClick={() => setSelectedDieId(die.id)}
-                    type="button"
-                  >
-                    <span className="rack-die-card__die" aria-hidden="true">
-                      {getGatheringDieTier(die.kind) === 2 ? "T2" : "D6"}
-                    </span>
-                    <strong>{getGatheringDieName(die.kind)} #{ordinal}</strong>
-                    <small
-                      className={slot >= 0 ? "rack-die-card__equipped" : ""}
+            {filteredDice.length > 0 ? (
+              <div className="rack-dice-grid">
+                {filteredDice.map((die) => {
+                  const slot = progression.loadout.indexOf(die.id);
+                  const ordinal = progression.inventory
+                    .slice(0, progression.inventory.indexOf(die) + 1)
+                    .filter((candidate) => candidate.kind === die.kind).length;
+                  const requirement = getGatheringDieLevelRequirement(die.kind);
+                  const isSelected = selectedDie.id === die.id;
+                  return (
+                    <button
+                      aria-pressed={isSelected}
+                      className={`rack-die-card ${isSelected ? "rack-die-card--selected" : ""} ${getGatheringDieTier(die.kind) === 2 ? "rack-die-card--specialist" : ""}`}
+                      key={die.id}
+                      onClick={() => setSelectedDieId(die.id)}
+                      type="button"
                     >
-                      {level < requirement
-                        ? `Level ${requirement} required`
-                        : slot >= 0
-                          ? `✓ Equipped · Slot ${slot + 1}`
-                          : "Tap to select"}
-                    </small>
-                  </button>
-                );
-              })}
-            </div>
+                      <span className="rack-die-card__die" aria-hidden="true">
+                        {getGatheringDieTier(die.kind) === 2 ? "T2" : "D6"}
+                      </span>
+                      <strong>{getGatheringDieName(die.kind)} #{ordinal}</strong>
+                      <small
+                        className={slot >= 0 ? "rack-die-card__equipped" : ""}
+                      >
+                        {level < requirement
+                          ? `Level ${requirement} required`
+                          : slot >= 0
+                            ? `✓ Equipped · Slot ${slot + 1}`
+                            : "Tap to select"}
+                      </small>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rack-empty-state">
+                No owned dice match this filter. Craft new physical dice in Crafting.
+              </div>
+            )}
 
             <div aria-live="polite" className="rack-quick-action">
               <div className="rack-quick-action__copy">
@@ -236,30 +229,6 @@ export function DiceRackOverlay({
             </button>
           </aside>
         </div>
-
-        <section className="rack-blueprint">
-          <div>
-            <span className="eyebrow">Forest blueprint</span>
-            <h3>{recipe.name}</h3>
-            <p>{recipe.description}</p>
-          </div>
-          <div className="rack-blueprint__facts">
-            <span>{ownedTierTwoDice} owned</span>
-            <span>Equip at Level {recipe.levelRequirement}</span>
-            <strong>{formatCost(recipe.cost)}</strong>
-          </div>
-          <button
-            disabled={!canCraft}
-            onClick={() => craftTierTwoDie(skill)}
-            type="button"
-          >
-            {!forestTrophy
-              ? "Defeat Forest Brute"
-              : canCraft
-                ? `Craft ${recipe.name}`
-                : formatMissingCost(resources, recipe.cost)}
-          </button>
-        </section>
       </div>
     </OverlayDialog>
   );
