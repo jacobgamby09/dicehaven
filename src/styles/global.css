@@ -5310,3 +5310,88 @@ progress::-moz-progress-bar {
     height: 9px;
   }
 }
+
+/* Roll timer belongs to the Dice Tray controls, not the felt stage. */
+.roll-speed-hud {
+  width: 100%;
+  margin: 0;
+  padding: 0 22px 15px;
+  border: 0;
+  border-bottom: 1px solid rgba(62, 77, 50, 0.12);
+  border-radius: 0;
+  background: rgba(251, 248, 235, 0.93);
+  box-shadow: none;
+}
+
+.roll-speed-hud__labels span {
+  color: #657160;
+}
+
+.roll-speed-hud__labels i {
+  background: #87a76a;
+  box-shadow: none;
+}
+
+.roll-speed-hud__labels strong {
+  color: #485548;
+}
+
+.roll-speed-hud__track {
+  height: 9px;
+  border-color: rgba(65, 79, 61, 0.14);
+  background: #dedfd3;
+  box-shadow: inset 0 1px 3px rgba(47, 59, 46, 0.12);
+}
+
+.roll-speed-hud__fill {
+  background: linear-gradient(90deg, #7fa464, #b8ca78);
+  box-shadow: none;
+}
+
+.skill-page--mining .roll-speed-hud__labels i {
+  background: #b3955f;
+  box-shadow: none;
+}
+
+.skill-page--mining .roll-speed-hud__fill {
+  background: linear-gradient(90deg, #98845d, #d8b46c);
+  box-shadow: none;
+}
+
+.roll-speed-hud small {
+  color: #879083;
+}
+
+.roll-speed-hud--inactive .roll-speed-hud__labels i {
+  background: #a4a99d;
+}
+
+.roll-speed-hud--inactive .roll-speed-hud__fill {
+  background: #bfc2b7;
+}
+
+.dice-stage {
+  margin-top: 0;
+  padding-top: 44px;
+  border-top: 0;
+}
+
+.dice-stage .resource-burst {
+  top: 18px;
+}
+
+@media (max-width: 680px) {
+  .roll-speed-hud {
+    margin: 0;
+    padding: 0 16px 13px;
+    border-radius: 0;
+  }
+
+  .dice-stage {
+    padding-top: 38px;
+  }
+
+  .dice-stage .resource-burst {
+    top: 18px;
+  }
+}

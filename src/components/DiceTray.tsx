@@ -85,28 +85,29 @@ export function DiceTray({
         )}
       </header>
 
-      <div className="dice-stage">
-        <div className="roll-speed-hud">
-          <div className="roll-speed-hud__labels">
-            <span><i aria-hidden="true" /> Roll speed</span>
-            <strong>{rollSpeedStatus}</strong>
-          </div>
-          <div
-            aria-label={`${skillName} roll speed`}
-            aria-valuemax={100}
-            aria-valuemin={0}
-            aria-valuenow={Math.round(displayedRollProgress * 100)}
-            aria-valuetext={`${rollSpeedStatus}; ${intervalSeconds.toFixed(1)} second interval`}
-            className="roll-speed-hud__track"
-            role="progressbar"
-          >
-            <span
-              className="roll-speed-hud__fill"
-              style={{ transform: `scaleX(${displayedRollProgress})` }}
-            />
-          </div>
-          <small>{intervalSeconds.toFixed(1)}s interval</small>
+      <div className={`roll-speed-hud ${isActive ? "" : "roll-speed-hud--inactive"}`}>
+        <div className="roll-speed-hud__labels">
+          <span><i aria-hidden="true" /> Roll speed</span>
+          <strong>{rollSpeedStatus}</strong>
         </div>
+        <div
+          aria-label={`${skillName} roll speed`}
+          aria-valuemax={100}
+          aria-valuemin={0}
+          aria-valuenow={Math.round(displayedRollProgress * 100)}
+          aria-valuetext={`${rollSpeedStatus}; ${intervalSeconds.toFixed(1)} second interval`}
+          className="roll-speed-hud__track"
+          role="progressbar"
+        >
+          <span
+            className="roll-speed-hud__fill"
+            style={{ transform: `scaleX(${displayedRollProgress})` }}
+          />
+        </div>
+        <small>{intervalSeconds.toFixed(1)}s interval</small>
+      </div>
+
+      <div className="dice-stage">
         <div aria-live="polite" className={`dice-grid dice-grid--${dice.length}`}>
           {dice.map((die) => (
             <Die
