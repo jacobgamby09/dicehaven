@@ -48,6 +48,20 @@ export function DiceTray({
     },
   );
   const visiblePhase = isActive ? phase : "idle";
+  const intervalSeconds = intervalMs / 1_000;
+  const remainingSeconds = Math.max(
+    0,
+    (intervalMs * (1 - progress)) / 1_000,
+  );
+  const rollSpeedStatus = !isActive
+    ? "Inactive"
+    : dice.length === 0
+      ? "No dice equipped"
+      : isPaused
+        ? "Paused"
+        : phase === "rolling"
+          ? "Rolling…"
+          : `${remainingSeconds.toFixed(1)}s until roll`;
 
   return (
     <section aria-labelledby="dice-tray-title" className="dice-tray">
@@ -65,31 +79,19 @@ export function DiceTray({
         )}
       </header>
 
-      <div className="roll-meter">
-        <div className="roll-meter__labels">
-          <span>
-            {!isActive
-              ? "No production"
-              : isPaused
-                ? "Production paused"
-                : phase === "rolling"
-                  ? "Rolling…"
-                  : "Next roll"}
-          </span>
-          <span>
-            {isActive
-              ? `${(intervalMs / 1_000).toFixed(1)}s`
-              : "Make active to train"}
-          </span>
-        </div>
-        <progress
-          aria-label={`Time until next ${skillName} roll`}
-          max={1}
-          value={isActive ? progress : 0}
-        />
-      </div>
-
       <div className="dice-stage">
+        <div className="roll-speed-hud">
+          <div className="roll-speed-hud__labels">
+            <span><i aria-hidden="true" /> Roll speed</span>
+            <strong>{rollSpeedStatus}</strong>
+          </div>
+          <progress
+            aria-label={`${skillName} roll speed: ${rollSpeedStatus}; ${intervalSeconds.toFixed(1)} second interval`}
+            max={1}
+            value={isActive && !isPaused && dice.length > 0 ? progress : 0}
+          />
+          <small>{intervalSeconds.toFixed(1)}s interval</small>
+        </div>
         <div aria-live="polite" className={`dice-grid dice-grid--${dice.length}`}>
           {dice.map((die) => (
             <Die

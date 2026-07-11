@@ -196,8 +196,8 @@ export function SkillTreeOverlay({
       title="Skill Tree"
     >
       <div className="skill-tree__balance">
-        <span>Spendable skill XP</span>
-        <strong>{progression.spendableXp}</strong>
+        <span>Spendable</span>
+        <strong>{progression.spendableXp} XP</strong>
       </div>
       <div className="skill-tree-minimal__body">
         <main className="skill-tree-minimal__tracks">

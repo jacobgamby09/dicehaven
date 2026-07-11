@@ -19,11 +19,14 @@ Dette er den løbende implementeringslog for greenfield-versionen i denne mappe.
 - Woodcutting/Mining-specifik illustration og tunge node-animationer er parkeret til et senere polish-pass.
 - Stemningsnavne som “Hone face”, “Steady swing” og “Deep rhythm” er fjernet fra upgrades. Hvert nodekort viser nu den præcise effekt og før/efter-værdi.
 - Det mobile sticky købspanel er reduceret til én centreret række med effekt til venstre og `Buy · X XP` til højre.
+- Dice stage har fået en tydelig **Roll Speed-HUD** med live countdown, progressbar, pause/inactive-state og aktuelt interval.
+- Skill Tree-headerens XP-balance viser nu altid enheden direkte, eksempelvis `264 XP`, i stedet for et nøgent tal.
 
 ### Verificeret
 
 - iPhone-lignende viewport på 390×844 viser både Skill Tree og Dice Rack uden klippede nodes, tomme canvasområder eller horisontalt side-overflow.
 - Browsermåling bekræfter, at Buy-knappen ligger inden for panelet og er vertikalt centreret.
+- Mobil-browsertesten bekræfter, at Roll Speed-baren animerer med gathering-clockens faktiske progressværdi, og at XP-labelen er synlig uden overflow.
 - Production-build og hele suiten består fortsat: 7 testfiler / 54 tests.
 
 ## 2026-07-11 — Dice Rack & visuelle Skill Trees
