@@ -62,6 +62,12 @@ export function DiceTray({
         : phase === "rolling"
           ? "Rolling…"
           : `${remainingSeconds.toFixed(1)}s until roll`;
+  const displayedRollProgress =
+    !isActive || dice.length === 0
+      ? 0
+      : phase === "rolling"
+        ? 1
+        : progress;
 
   return (
     <section aria-labelledby="dice-tray-title" className="dice-tray">
@@ -85,11 +91,20 @@ export function DiceTray({
             <span><i aria-hidden="true" /> Roll speed</span>
             <strong>{rollSpeedStatus}</strong>
           </div>
-          <progress
-            aria-label={`${skillName} roll speed: ${rollSpeedStatus}; ${intervalSeconds.toFixed(1)} second interval`}
-            max={1}
-            value={isActive && !isPaused && dice.length > 0 ? progress : 0}
-          />
+          <div
+            aria-label={`${skillName} roll speed`}
+            aria-valuemax={100}
+            aria-valuemin={0}
+            aria-valuenow={Math.round(displayedRollProgress * 100)}
+            aria-valuetext={`${rollSpeedStatus}; ${intervalSeconds.toFixed(1)} second interval`}
+            className="roll-speed-hud__track"
+            role="progressbar"
+          >
+            <span
+              className="roll-speed-hud__fill"
+              style={{ transform: `scaleX(${displayedRollProgress})` }}
+            />
+          </div>
           <small>{intervalSeconds.toFixed(1)}s interval</small>
         </div>
         <div aria-live="polite" className={`dice-grid dice-grid--${dice.length}`}>

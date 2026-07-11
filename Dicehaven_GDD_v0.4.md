@@ -20,6 +20,7 @@ Sprogregel: GDD'en er på dansk (arbejdssprog). **Al spiller-vendt tekst i spill
 *Revision 2026-07-11: Det smalle Upgrade Workshop er erstattet af Dice Rack og skill-specifikke Skill Trees. Gathering-face-upgrades deles nu pr. dice-blueprint, mens fysiske instanser fortsat ejes og udstyres individuelt (§7.3–§8, §12).*
 *Revision 2026-07-11 (2): Skill Tree og Dice Rack prioriterer et minimalistisk, mobilstabilt layout med almindeligt dokumentflow. Organiske canvas-træer og tung skill-theming er udsat til et senere polish-pass (§8, §12).*
 *Revision 2026-07-11 (3): Dice stage viser en fremtrædende Roll Speed-HUD med countdown, interval og progressbar. Skill Tree-balancen skriver altid XP-enheden direkte ved tallet (§12).*
+*Revision 2026-07-11 (4): Roll Speed bruger en custom Safari-sikker fill frem for native progress. Timeren er en full-width del af dice stage, står fuld under selve kastet og nulstiller derefter til næste cyklus (§12).*
 
 ---
 
@@ -319,7 +320,7 @@ Udvidelser pr. milestone:
 * **Sidemenuen** er navigationen til Skills, **Combat**, **Settlement** og tværgående opskrifter. Skill Trees åbnes lokalt fra den relevante skill-header, så konteksten aldrig mistes.
 * **Dice Rack:** stort overlay med aktive slots, fysisk inventory, filtre, face-inspector, equip/unequip/swap og synlige Tier 2-blueprints. Tomme slots producerer og træner ikke.
 * **Skill Tree:** minimalistisk overlay med fire upgrade-spor, tydelige locked/reachable/ready/purchased-states og et detailpanel med før/efter, pris og krav. Ingen fast canvas eller todimensionel panorering i første stabile version.
-* **Roll Speed-HUD:** ligger inde på selve dice stage som en attack-speed-lignende bar. Den viser live countdown, visuelt fill, pause/inactive-state og det aktuelle roll-interval, så speed-upgrades kan mærkes direkte.
+* **Roll Speed-HUD:** ligger som en integreret full-width topstribe på selve dice stage. Den bruger en custom CSS-fill frem for browserens native progress-element, viser live countdown, pause/inactive-state og aktuelt interval, og står fuld under `Rolling…`, før næste cyklus begynder.
 * **XP-enheder:** XP-balancer må aldrig vises som nøgne tal. Skill Tree-headeren viser eksempelvis `264 XP`, også når den forklarende label skjules på mobil.
 * **Combat-skærm**: genbruger dice tray-komponenten; tilføjer fjende-kort (navn, HP-bar, attack-telegraf), spillerens HP-bar, zone-progress-bar, loadout-vælger og en kompakt "dps ind/ud"-linje (Risk 3-mitigering: man skal kunne SE, hvorfor man taber)
 * **Impact-kontrakt:** Damage, Block og Light anvendes mekanisk ved terningens visuelle landing — aldrig før. Enemy attacks venter, mens et player-roll er i luften; player-roll har prioritet ved præcis samtidighed.
