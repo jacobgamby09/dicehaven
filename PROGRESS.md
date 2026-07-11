@@ -6,7 +6,29 @@ Dette er den løbende implementeringslog for greenfield-versionen i denne mappe.
 
 - **M0 — Auto-roll gathering:** Spilbar og verificeret med Upgrade Rush-progression.
 - **M1 — Combat vertical slice:** Spilbar end-to-end gennem Forest Brute, Tier 2 crafting, Frontier Forge og første Wolf Den-encounter. Næste checkpoint er bruger-playtest og lyd/juice baseret på den faktiske oplevelse.
-- **M2+ — Talents, sustain og dybere settlement:** Ikke påbegyndt.
+- **M2+ — Skill Tree-mekanikker, sustain og dybere settlement:** Ikke påbegyndt.
+
+## 2026-07-11 — Dice Rack & visuelle Skill Trees
+
+### Tilføjet
+
+- Det smalle **Upgrade Workshop** er fjernet fra Woodcutting og Mining; dice tray bruger nu hele skill-siden.
+- Nye header-actions ved siden af **Make Active**: **Dice Rack** med loadout-status og **Skill Tree** med disponibel skill-XP.
+- Nyt responsivt **Dice Rack-overlay** med aktive slots, fysisk inventory, Tier 1/Tier 2/bench-filtre, face-inspector samt ét-kliks equip og unequip.
+- Gathering-loadouts kan nu have reelt tomme slots. Et tomt loadout producerer ikke ressourcer og giver ikke gratis XP.
+- Tier 2-blueprint, recipe cost, level-gate og crafting er flyttet ind i Dice Rack.
+- Nyt datadrevet **Skill Tree** med 20 synlige nodes pr. gathering-skill: 12 blueprint-face-nodes, 4 roll-speed-nodes, 2 slot-milestones, startnode og Tier 2-gate.
+- Woodcutting har et levende træ-tema med organiske grene; Mining genbruger systemet som en mineskakt med varme metal- og lanternetoner.
+- Nodes viser locked, reachable, ready og purchased visuelt samt et fast detailpanel med effekt, pris og manglende krav.
+- Face-upgrades er ændret fra per-instans til delte **dice blueprints**. Alle eksisterende og fremtidige kopier af samme type deler det højeste opnåede face-rank.
+- Save-format opgraderet til v10. v9-saves samler individuelle kopier på deres højeste blueprint-rank uden at miste XP, inventory eller loadout.
+- Det gamle globale Talents-placeholder er fjernet fra sidebaren; skillens progression åbnes nu direkte i dens egen header.
+
+### Verificeret
+
+- Dice Rack equip/unequip, tomme slots, blueprint-arv og v9→v10-migration har automatiske tests.
+- Browser-QA består på mobil og desktop for begge skill-temaer uden konsolfejl, Vite error overlay eller horisontalt side-overflow.
+- Production-build og hele suiten består: 7 testfiler / 54 tests.
 
 ## 2026-07-10 — Post-boss loop, Frontier Forge & Wolf Den
 

@@ -766,6 +766,959 @@ progress::-moz-progress-bar {
   margin-top: 18px;
 }
 
+.skill-layout--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.skill-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.hero-tool-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  gap: 7px;
+  padding: 6px 10px;
+  border: 1px solid rgba(244, 231, 176, 0.26);
+  border-radius: 999px;
+  color: #f8f0d2;
+  background: rgba(17, 39, 28, 0.52);
+  box-shadow: 0 7px 18px rgba(18, 36, 25, 0.16);
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.hero-tool-button:hover {
+  border-color: rgba(255, 239, 170, 0.6);
+  background: rgba(35, 68, 46, 0.9);
+  transform: translateY(-1px);
+}
+
+.hero-tool-button > span {
+  color: #c4dc8b;
+  font-size: 0.86rem;
+}
+
+.hero-tool-button strong {
+  padding: 3px 6px;
+  border-radius: 999px;
+  color: #4b5b35;
+  background: #e4e8b1;
+  font-size: 0.6rem;
+}
+
+.hero-tool-button--tree {
+  border-color: rgba(245, 215, 125, 0.44);
+  background: rgba(78, 71, 31, 0.54);
+}
+
+.hero-tool-button--tree > span {
+  color: #f0d57e;
+}
+
+.hero-tool-button--tree strong {
+  color: #6e5128;
+  background: #f1dea0;
+}
+
+.game-overlay {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  padding: 24px;
+  place-items: center;
+  background: rgba(18, 28, 23, 0.72);
+  backdrop-filter: blur(7px);
+  animation: overlay-enter 180ms ease-out;
+}
+
+.overlay-dialog {
+  position: relative;
+  overflow: hidden;
+  width: min(1400px, 100%);
+  max-height: calc(100dvh - 48px);
+  border: 1px solid rgba(79, 80, 57, 0.28);
+  border-radius: 24px;
+  color: var(--ink);
+  background: #f8f3e2;
+  box-shadow: 0 35px 90px rgba(9, 20, 14, 0.42);
+  outline: none;
+  animation: dialog-enter 240ms cubic-bezier(0.2, 0.85, 0.28, 1);
+}
+
+.overlay-dialog__header {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  min-height: 94px;
+  padding: 20px 26px 18px;
+  border-bottom: 1px solid rgba(63, 74, 53, 0.13);
+  background:
+    linear-gradient(105deg, rgba(250, 247, 232, 0.98), rgba(238, 235, 209, 0.94)),
+    #f6f1df;
+}
+
+.overlay-dialog__header h2 {
+  margin: 0 0 3px;
+  color: #2d392f;
+  font-size: 1.7rem;
+}
+
+.overlay-dialog__header p {
+  margin: 0;
+  color: #748070;
+  font-size: 0.74rem;
+}
+
+.overlay-dialog__close {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid rgba(57, 69, 51, 0.15);
+  border-radius: 50%;
+  color: #566151;
+  background: rgba(255, 253, 242, 0.76);
+  cursor: pointer;
+  font-size: 1.35rem;
+}
+
+.overlay-dialog__close:hover {
+  color: #28382d;
+  background: #fffdf3;
+  transform: rotate(4deg);
+}
+
+.dice-rack__body {
+  overflow-y: auto;
+  max-height: calc(100dvh - 142px);
+  padding: 20px 24px 24px;
+  background:
+    linear-gradient(rgba(69, 74, 54, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(69, 74, 54, 0.035) 1px, transparent 1px),
+    #f4efdd;
+  background-size: 24px 24px;
+}
+
+.rack-loadout,
+.rack-inventory,
+.rack-inspector,
+.rack-blueprint {
+  border: 1px solid rgba(63, 73, 53, 0.15);
+  border-radius: 17px;
+  background: rgba(255, 252, 240, 0.92);
+  box-shadow: 0 10px 25px rgba(68, 58, 37, 0.07);
+}
+
+.rack-loadout {
+  padding: 16px 18px 18px;
+}
+
+.rack-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 16px;
+}
+
+.rack-section-heading h3,
+.rack-inspector h3,
+.rack-blueprint h3 {
+  margin: 0;
+  color: #334034;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+}
+
+.rack-section-heading > span {
+  color: #7a8576;
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+
+.rack-loadout__slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.rack-slot {
+  position: relative;
+  overflow: hidden;
+  min-height: 82px;
+  border: 1px dashed rgba(76, 91, 64, 0.32);
+  border-radius: 13px;
+  background: rgba(235, 237, 215, 0.54);
+}
+
+.rack-slot--target {
+  border-style: solid;
+  border-color: #91ac68;
+  background: #edf2d9;
+  box-shadow: inset 0 0 0 2px rgba(133, 169, 96, 0.13);
+}
+
+.rack-slot__select {
+  display: grid;
+  width: 100%;
+  min-height: 82px;
+  align-content: center;
+  justify-items: start;
+  padding: 12px 38px 12px 14px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.rack-slot__select small,
+.rack-slot__select span {
+  color: #7f8979;
+  font-size: 0.61rem;
+}
+
+.rack-slot__select strong {
+  margin: 3px 0;
+  color: #344534;
+  font-size: 0.78rem;
+}
+
+.rack-slot__remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #7d6e59;
+  background: rgba(255, 253, 243, 0.8);
+  cursor: pointer;
+}
+
+.rack-slot__remove:hover {
+  color: #8c4434;
+  background: #f6dfd5;
+}
+
+.dice-rack__workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.7fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.rack-inventory,
+.rack-inspector {
+  padding: 17px;
+}
+
+.rack-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.rack-filters button {
+  padding: 6px 10px;
+  border: 1px solid rgba(70, 83, 62, 0.13);
+  border-radius: 999px;
+  color: #687462;
+  background: #f2efdf;
+  cursor: pointer;
+  font-size: 0.65rem;
+  font-weight: 750;
+}
+
+.rack-filters button[aria-pressed="true"] {
+  color: #f8f2da;
+  background: #3f634c;
+}
+
+.rack-dice-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.rack-die-card {
+  display: grid;
+  min-height: 142px;
+  align-content: center;
+  justify-items: center;
+  padding: 12px 8px;
+  border: 1px solid rgba(71, 82, 63, 0.14);
+  border-radius: 14px;
+  color: #344035;
+  background: #fbf8ea;
+  cursor: pointer;
+  text-align: center;
+}
+
+.rack-die-card:hover,
+.rack-die-card--selected {
+  border-color: #86a266;
+  background: #eef3db;
+  transform: translateY(-2px);
+}
+
+.rack-die-card--selected {
+  box-shadow: inset 0 0 0 2px rgba(127, 161, 92, 0.2), 0 8px 18px rgba(63, 84, 48, 0.1);
+}
+
+.rack-die-card--specialist {
+  border-color: rgba(185, 132, 65, 0.35);
+  background: #fbf0d8;
+}
+
+.rack-die-card__die {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 9px;
+  place-items: center;
+  border: 2px solid #82603b;
+  border-radius: 14px;
+  color: #4f3825;
+  background: linear-gradient(145deg, #e9c884, #b77b42);
+  box-shadow: inset 3px 3px rgba(255, 245, 203, 0.5), 0 7px 0 -3px #304434;
+  font-size: 0.65rem;
+  font-weight: 900;
+}
+
+.rack-die-card--specialist .rack-die-card__die {
+  border-color: #6e7b37;
+  background: linear-gradient(145deg, #d4db8a, #8fa04e);
+}
+
+.dice-rack--mining .rack-die-card__die {
+  border-color: #6f6957;
+  background: linear-gradient(145deg, #d8d0ad, #9d9375);
+}
+
+.dice-rack--mining .rack-die-card--specialist .rack-die-card__die {
+  border-color: #8e4e36;
+  background: linear-gradient(145deg, #e0a06f, #ad5d3f);
+}
+
+.rack-die-card strong {
+  font-size: 0.72rem;
+}
+
+.rack-die-card small {
+  margin-top: 4px;
+  color: #7e8879;
+  font-size: 0.6rem;
+}
+
+.rack-inspector {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  background: linear-gradient(155deg, #fffced, #eee9d5);
+}
+
+.rack-inspector__title p {
+  margin: 5px 0 14px;
+  color: #788175;
+  font-size: 0.67rem;
+}
+
+.rack-face-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 0 14px;
+  padding: 0;
+  gap: 7px;
+  list-style: none;
+}
+
+.rack-face-grid li {
+  display: grid;
+  min-height: 61px;
+  align-content: center;
+  justify-items: center;
+  border: 1px solid rgba(70, 80, 62, 0.13);
+  border-radius: 10px;
+  background: rgba(255, 253, 245, 0.82);
+}
+
+.rack-face-grid small {
+  color: #a0a494;
+  font-size: 0.55rem;
+}
+
+.rack-face-grid strong {
+  color: #43513f;
+  font-size: 0.9rem;
+}
+
+.rack-face-grid span {
+  color: #8b7049;
+  font-size: 0.5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.rack-inspector__notice {
+  padding: 9px;
+  border-radius: 9px;
+  color: #795a3b;
+  background: #f6e7cd;
+  font-size: 0.65rem;
+}
+
+.rack-primary-action,
+.rack-blueprint > button,
+.talent-detail__purchase {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 13px;
+  border: 1px solid #31513d;
+  border-radius: 11px;
+  color: #fff7de;
+  background: linear-gradient(#4c755a, #365944);
+  box-shadow: 0 8px 18px rgba(38, 75, 51, 0.18);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 850;
+}
+
+.rack-primary-action:hover,
+.rack-blueprint > button:hover:not(:disabled),
+.talent-detail__purchase:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.rack-primary-action--muted {
+  border-color: rgba(65, 77, 57, 0.17);
+  color: #5e6c59;
+  background: #e7e7d6;
+  box-shadow: none;
+}
+
+.rack-tree-link,
+.talent-detail__rack-link {
+  width: 100%;
+  margin-top: 8px;
+  padding: 7px;
+  border: 0;
+  color: #66784e;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.64rem;
+  font-weight: 800;
+}
+
+.rack-blueprint {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(190px, 0.35fr);
+  align-items: center;
+  margin-top: 16px;
+  padding: 16px 18px;
+  gap: 22px;
+  border-color: rgba(174, 121, 57, 0.23);
+  background: linear-gradient(100deg, #fbf4df, #f4e5c7);
+}
+
+.rack-blueprint p {
+  margin: 4px 0 0;
+  color: #7c7565;
+  font-size: 0.68rem;
+}
+
+.rack-blueprint__facts {
+  display: grid;
+  color: #756d5b;
+  font-size: 0.63rem;
+  gap: 3px;
+}
+
+.rack-blueprint__facts strong {
+  margin-top: 2px;
+  color: #76552f;
+}
+
+.rack-blueprint > button:disabled,
+.talent-detail__purchase:disabled {
+  border-color: rgba(75, 79, 66, 0.13);
+  color: #85897e;
+  background: #dedecf;
+  box-shadow: none;
+}
+
+.skill-tree {
+  width: min(1540px, 100%);
+  background: #1d3528;
+}
+
+.skill-tree .overlay-dialog__header {
+  color: #fff4d4;
+  background:
+    radial-gradient(circle at 74% 20%, rgba(219, 213, 118, 0.2), transparent 22%),
+    linear-gradient(105deg, #244b35, #345e40 55%, #526c43);
+}
+
+.skill-tree .overlay-dialog__header h2 {
+  color: #fff8dd;
+}
+
+.skill-tree .overlay-dialog__header p,
+.skill-tree .overlay-dialog__header .eyebrow {
+  color: #cedbb7;
+}
+
+.skill-tree .overlay-dialog__close {
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #fff1c9;
+  background: rgba(13, 40, 25, 0.45);
+}
+
+.skill-tree--mining .overlay-dialog__header {
+  background:
+    radial-gradient(circle at 74% 20%, rgba(239, 185, 91, 0.2), transparent 22%),
+    linear-gradient(105deg, #283632, #394640 55%, #5a584b);
+}
+
+.skill-tree__balance {
+  position: absolute;
+  z-index: 7;
+  top: 25px;
+  right: 82px;
+  display: grid;
+  min-width: 112px;
+  justify-items: end;
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 234, 161, 0.27);
+  border-radius: 12px;
+  color: #e8ddb1;
+  background: rgba(19, 42, 28, 0.48);
+}
+
+.skill-tree__balance span {
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.skill-tree__balance strong {
+  color: #fff0a9;
+  font-family: Georgia, serif;
+  font-size: 1.1rem;
+}
+
+.skill-tree__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  height: min(700px, calc(100dvh - 142px));
+  min-height: 500px;
+}
+
+.skill-tree__viewport {
+  overflow: auto;
+  background: #193324;
+  scrollbar-color: #65825d #183023;
+  scrollbar-width: thin;
+}
+
+.skill-tree__canvas {
+  position: relative;
+  overflow: hidden;
+  width: 1180px;
+  height: 700px;
+  background:
+    radial-gradient(circle at 40% 32%, rgba(155, 186, 109, 0.14), transparent 32%),
+    linear-gradient(#274d37, #1b3b2a 68%, #152f22);
+}
+
+.skill-tree__canvas::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  opacity: 0.11;
+  background-image: radial-gradient(circle, #f1e7b9 0.7px, transparent 0.85px);
+  background-size: 9px 9px;
+  pointer-events: none;
+  content: "";
+}
+
+.skill-tree__scenery {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tree-scenery__trunk {
+  position: absolute;
+  bottom: -45px;
+  left: 345px;
+  width: 470px;
+  height: 650px;
+  opacity: 0.52;
+  background: linear-gradient(90deg, #604d2e, #82653a 48%, #4b3f28);
+  clip-path: polygon(45% 100%, 49% 60%, 32% 44%, 9% 28%, 34% 39%, 50% 51%, 54% 31%, 45% 10%, 59% 31%, 57% 49%, 78% 28%, 96% 22%, 76% 35%, 59% 60%, 65% 100%);
+  filter: drop-shadow(0 18px 22px rgba(6, 20, 12, 0.35));
+}
+
+.tree-scenery__crown {
+  position: absolute;
+  top: -165px;
+  left: 60px;
+  width: 1040px;
+  height: 470px;
+  opacity: 0.18;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 16% 70%, #a1bc68 0 12%, transparent 13%),
+    radial-gradient(circle at 36% 40%, #b8c870 0 16%, transparent 17%),
+    radial-gradient(circle at 58% 56%, #8faa5b 0 19%, transparent 20%),
+    radial-gradient(circle at 80% 42%, #bdc66b 0 16%, transparent 17%);
+}
+
+.tree-scenery__ground {
+  position: absolute;
+  right: -5%;
+  bottom: -105px;
+  left: -5%;
+  height: 210px;
+  border-radius: 50% 50% 0 0;
+  background: #102c1e;
+  box-shadow: 0 -22px 80px rgba(124, 154, 82, 0.12);
+}
+
+.skill-tree--mining .skill-tree__canvas {
+  background:
+    radial-gradient(circle at 78% 25%, rgba(211, 147, 77, 0.13), transparent 24%),
+    linear-gradient(150deg, #38443f, #26322e 50%, #1b2723);
+}
+
+.skill-tree--mining .tree-scenery__trunk {
+  bottom: -25px;
+  left: 310px;
+  width: 560px;
+  height: 650px;
+  opacity: 0.35;
+  background:
+    linear-gradient(90deg, transparent 43%, #151f1c 44% 56%, transparent 57%),
+    repeating-linear-gradient(0deg, transparent 0 70px, #8a6943 71px 79px, transparent 80px 92px);
+  clip-path: polygon(37% 100%, 39% 42%, 20% 28%, 8% 12%, 24% 24%, 46% 35%, 47% 8%, 54% 8%, 54% 35%, 78% 21%, 93% 15%, 76% 30%, 61% 44%, 64% 100%);
+}
+
+.skill-tree--mining .tree-scenery__crown {
+  top: 35px;
+  opacity: 0.2;
+  background:
+    radial-gradient(ellipse at 15% 25%, #d6ac65 0 3%, transparent 4%),
+    radial-gradient(ellipse at 80% 16%, #83b5a5 0 3%, transparent 4%),
+    radial-gradient(ellipse at 57% 70%, #c27b57 0 4%, transparent 5%);
+}
+
+.skill-tree--mining .tree-scenery__ground {
+  background: #16231f;
+}
+
+.skill-tree__connections {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.talent-branch {
+  fill: none;
+  stroke: rgba(72, 58, 35, 0.72);
+  stroke-linecap: round;
+  stroke-width: 9;
+  transition: stroke 260ms ease, filter 260ms ease;
+}
+
+.talent-branch--reachable {
+  stroke: rgba(153, 153, 82, 0.75);
+  stroke-dasharray: 7 10;
+  stroke-width: 6;
+}
+
+.talent-branch--grown {
+  stroke: #acc76c;
+  stroke-width: 8;
+  filter: drop-shadow(0 0 6px rgba(191, 213, 112, 0.48));
+  animation: branch-grow 420ms ease-out;
+}
+
+.skill-tree--mining .talent-branch {
+  stroke: rgba(91, 76, 59, 0.9);
+}
+
+.skill-tree--mining .talent-branch--reachable {
+  stroke: rgba(203, 155, 88, 0.68);
+}
+
+.skill-tree--mining .talent-branch--grown {
+  stroke: #d4a75e;
+  filter: drop-shadow(0 0 6px rgba(228, 171, 88, 0.44));
+}
+
+.talent-node {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  width: 116px;
+  min-height: 88px;
+  margin-top: -42px;
+  margin-left: -58px;
+  justify-items: center;
+  border: 0;
+  color: #dde3c6;
+  background: transparent;
+  cursor: pointer;
+  text-align: center;
+}
+
+.talent-node__medallion {
+  position: relative;
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 3px solid #526054;
+  border-radius: 50%;
+  color: #7c877b;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.13), transparent 20%),
+    #293a31;
+  box-shadow: inset 0 0 0 4px rgba(9, 25, 17, 0.24), 0 7px 12px rgba(7, 20, 12, 0.32);
+}
+
+.talent-node--large .talent-node__medallion {
+  width: 67px;
+  height: 67px;
+  border-width: 4px;
+  font-size: 1rem;
+}
+
+.talent-node__medallion i {
+  position: absolute;
+  right: -4px;
+  bottom: -3px;
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border: 2px solid #e8edc4;
+  border-radius: 50%;
+  color: #294532;
+  background: #b7cc78;
+  font-size: 0.58rem;
+  font-style: normal;
+}
+
+.talent-node__label {
+  max-width: 116px;
+  margin-top: 5px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-shadow: 0 2px 4px rgba(6, 18, 11, 0.68);
+}
+
+.talent-node small {
+  margin-top: 2px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  color: #b8bca8;
+  background: rgba(10, 25, 16, 0.55);
+  font-size: 0.52rem;
+  font-weight: 800;
+}
+
+.talent-node--reachable .talent-node__medallion {
+  border-color: #8b9367;
+  color: #c6c8a5;
+  background: #3a4837;
+}
+
+.talent-node--ready .talent-node__medallion {
+  border-color: #e2cc72;
+  color: #fff2a8;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.24), transparent 20%),
+    linear-gradient(145deg, #657c43, #3d593d);
+  box-shadow: inset 0 0 0 4px rgba(20, 45, 26, 0.3), 0 0 0 4px rgba(210, 202, 105, 0.12), 0 0 20px rgba(221, 211, 113, 0.34);
+  animation: node-ready-pulse 2.4s ease-in-out infinite;
+}
+
+.talent-node--acquired .talent-node__medallion {
+  border-color: #b8d06f;
+  color: #fff5bc;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.32), transparent 20%),
+    linear-gradient(145deg, #779657, #496b45);
+  box-shadow: inset 0 0 0 4px rgba(33, 76, 39, 0.28), 0 0 18px rgba(168, 202, 95, 0.28);
+}
+
+.skill-tree--mining .talent-node--ready .talent-node__medallion,
+.skill-tree--mining .talent-node--acquired .talent-node__medallion {
+  border-color: #e0b15d;
+  color: #fff1c0;
+  background: linear-gradient(145deg, #8c704b, #554d3c);
+}
+
+.talent-node--locked {
+  opacity: 0.72;
+}
+
+.talent-node--selected .talent-node__medallion {
+  outline: 2px solid rgba(255, 243, 176, 0.9);
+  outline-offset: 5px;
+}
+
+.talent-detail {
+  position: relative;
+  z-index: 4;
+  overflow-y: auto;
+  padding: 28px 24px;
+  border-left: 1px solid rgba(238, 228, 184, 0.14);
+  color: #e8ebd5;
+  background:
+    radial-gradient(circle at 50% 0, rgba(181, 194, 108, 0.12), transparent 28%),
+    #172c21;
+  box-shadow: -15px 0 35px rgba(7, 17, 11, 0.16);
+}
+
+.skill-tree--mining .talent-detail {
+  background:
+    radial-gradient(circle at 50% 0, rgba(222, 163, 90, 0.12), transparent 28%),
+    #202b27;
+}
+
+.talent-detail .eyebrow {
+  color: #a8b78e;
+}
+
+.talent-detail__icon {
+  display: grid;
+  width: 74px;
+  height: 74px;
+  margin: 20px 0 16px;
+  place-items: center;
+  border: 3px solid #aebd6b;
+  border-radius: 50%;
+  color: #fff0ac;
+  background: linear-gradient(145deg, #63784a, #354b39);
+  box-shadow: inset 0 0 0 5px rgba(13, 35, 20, 0.28), 0 0 25px rgba(176, 196, 102, 0.18);
+  font-family: Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.talent-detail h3 {
+  margin: 0 0 8px;
+  color: #fff6d8;
+  font-family: Georgia, serif;
+  font-size: 1.35rem;
+}
+
+.talent-detail > p {
+  min-height: 82px;
+  color: #b9c3ae;
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.talent-detail__cost {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 18px 0 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(226, 219, 150, 0.13);
+  border-radius: 10px;
+  color: #9eaa93;
+  background: rgba(255, 255, 255, 0.035);
+  font-size: 0.65rem;
+}
+
+.talent-detail__cost strong {
+  color: #ead785;
+}
+
+.talent-detail__purchase {
+  border-color: #96aa5c;
+  background: linear-gradient(#6c874d, #425f3e);
+}
+
+.talent-detail__legend {
+  display: grid;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #91a08d;
+  font-size: 0.6rem;
+  gap: 7px;
+}
+
+.talent-detail__legend span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #647065;
+  border-radius: 50%;
+  background: #2d3931;
+}
+
+.legend-dot--ready {
+  border-color: #e2cc72;
+  background: #788b4a;
+  box-shadow: 0 0 7px rgba(225, 205, 111, 0.5);
+}
+
+.legend-dot--owned {
+  border-color: #b6ce70;
+  background: #6e924e;
+}
+
+@keyframes overlay-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dialog-enter {
+  from { opacity: 0; transform: translateY(12px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes branch-grow {
+  from { stroke-dasharray: 0 900; }
+  to { stroke-dasharray: 900 0; }
+}
+
+@keyframes node-ready-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.18); }
+}
+
 .dice-tray,
 .upgrade-panel,
 .preview-card,
@@ -3555,6 +4508,136 @@ progress::-moz-progress-bar {
   .settlement-workshop,
   .workshop-site {
     right: 8%;
+  }
+}
+
+@media (max-width: 980px) {
+  .game-overlay {
+    padding: 12px;
+  }
+
+  .overlay-dialog {
+    max-height: calc(100dvh - 24px);
+    border-radius: 18px;
+  }
+
+  .dice-rack__body {
+    max-height: calc(100dvh - 118px);
+  }
+
+  .dice-rack__workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .rack-inspector {
+    position: static;
+  }
+
+  .rack-dice-grid {
+    grid-template-columns: repeat(3, minmax(110px, 1fr));
+  }
+
+  .rack-blueprint {
+    grid-template-columns: 1fr auto;
+  }
+
+  .rack-blueprint > div:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .skill-tree__body {
+    grid-template-columns: minmax(0, 1fr) 250px;
+  }
+}
+
+@media (max-width: 680px) {
+  .skill-hero__copy {
+    width: 100%;
+  }
+
+  .skill-hero__meta {
+    max-width: 92%;
+  }
+
+  .hero-tool-button {
+    padding: 6px 9px;
+    font-size: 0.61rem;
+  }
+
+  .game-overlay {
+    padding: 0;
+    place-items: stretch;
+  }
+
+  .overlay-dialog {
+    width: 100%;
+    max-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .overlay-dialog__header {
+    min-height: 84px;
+    padding: 16px 18px;
+  }
+
+  .overlay-dialog__header h2 {
+    font-size: 1.4rem;
+  }
+
+  .overlay-dialog__header p {
+    max-width: 230px;
+  }
+
+  .dice-rack__body {
+    max-height: calc(100dvh - 84px);
+    padding: 12px;
+  }
+
+  .rack-loadout__slots,
+  .rack-dice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rack-slot:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .rack-blueprint {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .rack-blueprint > div:first-child {
+    grid-column: auto;
+  }
+
+  .skill-tree__balance {
+    top: 20px;
+    right: 65px;
+    min-width: 78px;
+    padding: 6px 8px;
+  }
+
+  .skill-tree__balance span {
+    display: none;
+  }
+
+  .skill-tree__body {
+    display: block;
+    height: calc(100dvh - 84px);
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .skill-tree__viewport {
+    height: 62dvh;
+  }
+
+  .talent-detail {
+    min-height: 360px;
+    border-top: 1px solid rgba(238, 228, 184, 0.14);
+    border-left: 0;
   }
 }
 

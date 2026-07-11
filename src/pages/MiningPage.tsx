@@ -1,5 +1,8 @@
+import { useState } from "react";
+import { DiceRackOverlay } from "../components/DiceRackOverlay";
 import { DiceTray } from "../components/DiceTray";
-import { GatheringUpgradePanel } from "../components/GatheringUpgradePanel";
+import { SkillHeaderActions } from "../components/SkillHeaderActions";
+import { SkillTreeOverlay } from "../components/SkillTreeOverlay";
 import { getGatheringDice } from "../engine/content";
 import { getLevelProgress } from "../engine/progression";
 import type { RollEvent } from "../engine/roll";
@@ -27,6 +30,7 @@ export function MiningPage({
   onMakeActive,
   onTogglePause,
 }: MiningPageProps): React.JSX.Element {
+  const [openOverlay, setOpenOverlay] = useState<"rack" | "tree" | null>(null);
   const progression = useGameStore((state) => state.mining);
   const levelProgress = getLevelProgress(progression.lifetimeXp);
   const dice = getGatheringDice(
@@ -47,13 +51,15 @@ export function MiningPage({
         </div>
         <div className="skill-hero__copy">
           <div className="skill-hero__meta">
-            {isActive ? (
-              <span className="status-pill"><span /> Active skill</span>
-            ) : (
-              <button className="make-active-button" onClick={onMakeActive} type="button">
-                Make Active
-              </button>
-            )}
+            <SkillHeaderActions
+              equippedDice={progression.loadout.filter(Boolean).length}
+              isActive={isActive}
+              onMakeActive={onMakeActive}
+              onOpenDiceRack={() => setOpenOverlay("rack")}
+              onOpenSkillTree={() => setOpenOverlay("tree")}
+              skillXp={progression.spendableXp}
+              slots={progression.slots}
+            />
           </div>
           <h1>Mining</h1>
           <p>Your crew follows the lantern light toward stone and deeper veins.</p>
@@ -74,7 +80,7 @@ export function MiningPage({
         </div>
       </section>
 
-      <div className="skill-layout">
+      <div className="skill-layout skill-layout--single">
         <DiceTray
           dice={dice}
           event={event}
@@ -88,11 +94,21 @@ export function MiningPage({
           secondaryResource="copper"
           skillName="Mining"
         />
-
-        <GatheringUpgradePanel
+      </div>
+      {openOverlay === "rack" ? (
+        <DiceRackOverlay
+          onClose={() => setOpenOverlay(null)}
+          onOpenSkillTree={() => setOpenOverlay("tree")}
           skill="mining"
         />
-      </div>
+      ) : null}
+      {openOverlay === "tree" ? (
+        <SkillTreeOverlay
+          onClose={() => setOpenOverlay(null)}
+          onOpenDiceRack={() => setOpenOverlay("rack")}
+          skill="mining"
+        />
+      ) : null}
     </div>
   );
 }

@@ -55,7 +55,7 @@ export interface SkillProgression {
   slots: number;
   rollSpeedLevel: number;
   inventory: GatheringDieInstance[];
-  loadout: string[];
+  loadout: Array<string | null>;
 }
 
 export interface CombatSession {
@@ -165,6 +165,10 @@ interface GameState {
   equipGatheringDie: (
     skill: GatheringSkillId,
     dieInstanceId: string,
+    slotIndex: number,
+  ) => void;
+  unequipGatheringSlot: (
+    skill: GatheringSkillId,
     slotIndex: number,
   ) => void;
   purchaseWorkshop: () => void;
@@ -384,20 +388,42 @@ function migrateGatheringProgression(
     : [];
 
   if (physicalInventory.length > 0) {
-    const inventory = [...physicalInventory];
+    const highestUpgradeByKind = new Map<string, number>();
+    for (const instance of physicalInventory) {
+      highestUpgradeByKind.set(
+        instance.kind,
+        Math.max(
+          highestUpgradeByKind.get(instance.kind) ?? 0,
+          instance.upgradeLevel,
+        ),
+      );
+    }
+    const inventory = physicalInventory.map((instance) => ({
+      ...instance,
+      upgradeLevel: highestUpgradeByKind.get(instance.kind) ?? 0,
+    }));
     const inventoryIds = new Set(inventory.map((instance) => instance.id));
-    const loadout = Array.isArray(legacy?.loadout)
-      ? legacy.loadout.filter(
-          (id, index, ids): id is string =>
-            typeof id === "string" &&
-            inventoryIds.has(id) &&
-            ids.indexOf(id) === index,
-        ).slice(0, slots)
+    const equippedIds = new Set<string>();
+    const loadout: Array<string | null> = Array.isArray(legacy?.loadout)
+      ? legacy.loadout.slice(0, slots).map((id) => {
+          if (
+            typeof id !== "string" ||
+            !inventoryIds.has(id) ||
+            equippedIds.has(id)
+          ) {
+            return null;
+          }
+          equippedIds.add(id);
+          return id;
+        })
       : [];
 
     for (const instance of inventory) {
       if (loadout.length >= slots) break;
-      if (!loadout.includes(instance.id)) loadout.push(instance.id);
+      if (!equippedIds.has(instance.id)) {
+        loadout.push(instance.id);
+        equippedIds.add(instance.id);
+      }
     }
 
     let nextIndex = inventory.length + 1;
@@ -451,7 +477,7 @@ export function migratePersistedGameState(
   persistedState: unknown,
   version: number,
 ): Partial<GameState> {
-  if (version >= 9) {
+  if (version >= 10) {
     return persistedState as Partial<GameState>;
   }
 
@@ -500,6 +526,9 @@ export const useGameStore = create<GameState>()(
             skillState.inventory,
             skillState.loadout,
           );
+          if (dice.length === 0) {
+            return state;
+          }
           const outcome = resolveRoll(state.seed, nextRollId, dice);
 
           return {
@@ -548,11 +577,11 @@ export const useGameStore = create<GameState>()(
             return state;
           }
 
-          const inventory = [...skillState.inventory];
-          inventory[dieIndex] = {
-            ...die,
-            upgradeLevel: die.upgradeLevel + 1,
-          };
+          const inventory = skillState.inventory.map((instance) =>
+            instance.kind === die.kind
+              ? { ...instance, upgradeLevel: die.upgradeLevel + 1 }
+              : instance,
+          );
 
           return {
             lastEvents: { ...state.lastEvents, [skill]: null },
@@ -600,6 +629,14 @@ export const useGameStore = create<GameState>()(
             nextIndex += 1;
           }
           const starterDie = createStarterGatheringDie(skill, nextIndex);
+          const starterKind = starterDie.kind;
+          const blueprintLevel = skillState.inventory.find(
+            (instance) => instance.kind === starterKind,
+          )?.upgradeLevel ?? 0;
+          const upgradedStarterDie = {
+            ...starterDie,
+            upgradeLevel: blueprintLevel,
+          };
 
           return {
             lastEvents: { ...state.lastEvents, [skill]: null },
@@ -607,8 +644,8 @@ export const useGameStore = create<GameState>()(
               ...skillState,
               slots: skillState.slots + 1,
               spendableXp: skillState.spendableXp - cost,
-              inventory: [...skillState.inventory, starterDie],
-              loadout: [...skillState.loadout, starterDie.id],
+              inventory: [...skillState.inventory, upgradedStarterDie],
+              loadout: [...skillState.loadout, upgradedStarterDie.id],
             },
           };
         });
@@ -675,6 +712,25 @@ export const useGameStore = create<GameState>()(
           }
           loadout[slotIndex] = dieInstanceId;
 
+          return {
+            lastEvents: { ...state.lastEvents, [skill]: null },
+            [skill]: { ...skillState, loadout },
+          };
+          });
+        },
+      unequipGatheringSlot: (skill, slotIndex) => {
+        set((state) => {
+          const skillState = state[skill];
+          if (
+            slotIndex < 0 ||
+            slotIndex >= skillState.loadout.length ||
+            skillState.loadout[slotIndex] === null
+          ) {
+            return state;
+          }
+
+          const loadout = [...skillState.loadout];
+          loadout[slotIndex] = null;
           return {
             lastEvents: { ...state.lastEvents, [skill]: null },
             [skill]: { ...skillState, loadout },
@@ -1143,7 +1199,7 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: "dicehaven-save",
-      version: 9,
+      version: 10,
       migrate: migratePersistedGameState,
       partialize: ({
         resources,

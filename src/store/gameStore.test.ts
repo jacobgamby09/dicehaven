@@ -124,6 +124,58 @@ describe("game store", () => {
     ).toEqual([1, 0, 0, 1, 1, 1]);
   });
 
+  it("shares starter face upgrades across the blueprint and future copies", () => {
+    useGameStore.setState({
+      woodcutting: {
+        ...useGameStore.getState().woodcutting,
+        lifetimeXp: 40,
+        spendableXp: 40,
+      },
+    });
+    useGameStore.getState().purchaseGatheringSlot("woodcutting");
+    const firstDieId = useGameStore.getState().woodcutting.inventory[0].id;
+    useGameStore.getState().purchaseGatheringFaceUpgrade("woodcutting", firstDieId);
+
+    expect(
+      useGameStore
+        .getState()
+        .woodcutting.inventory.map((die) => die.upgradeLevel),
+    ).toEqual([1, 1]);
+  });
+
+  it("allows gathering dice to be benched without granting empty-roll XP", () => {
+    useGameStore.getState().unequipGatheringSlot("woodcutting", 0);
+    useGameStore.getState().performRoll();
+
+    const progression = useGameStore.getState().woodcutting;
+    expect(progression.loadout).toEqual([null]);
+    expect(progression.lifetimeXp).toBe(0);
+    expect(useGameStore.getState().rollCount).toBe(0);
+  });
+
+  it("migrates v9 individual dice to the highest shared blueprint rank", () => {
+    const migrated = migratePersistedGameState(
+      {
+        woodcutting: {
+          lifetimeXp: 100,
+          spendableXp: 10,
+          slots: 2,
+          rollSpeedLevel: 0,
+          inventory: [
+            { id: "woodcutting-die-1", kind: "dullAxe", upgradeLevel: 2 },
+            { id: "woodcutting-die-2", kind: "dullAxe", upgradeLevel: 5 },
+          ],
+          loadout: ["woodcutting-die-1", "woodcutting-die-2"],
+        },
+      },
+      9,
+    );
+
+    expect(
+      migrated.woodcutting?.inventory.map((die) => die.upgradeLevel),
+    ).toEqual([5, 5]);
+  });
+
   it("buys skill-wide roll speed with spendable XP", () => {
     useGameStore.setState({
       mining: {
@@ -212,7 +264,7 @@ describe("game store", () => {
     useGameStore.getState().purchaseGatheringSlot("woodcutting");
     const [firstDieId, secondDieId] = useGameStore.getState().woodcutting.loadout;
 
-    useGameStore.getState().equipGatheringDie("woodcutting", secondDieId, 0);
+    useGameStore.getState().equipGatheringDie("woodcutting", secondDieId!, 0);
 
     expect(useGameStore.getState().woodcutting.loadout).toEqual([
       secondDieId,

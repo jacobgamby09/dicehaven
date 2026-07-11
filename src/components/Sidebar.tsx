@@ -38,7 +38,6 @@ const WORLD_ITEMS: readonly NavItem[] = [
 ];
 
 const PROGRESSION_ITEMS: readonly NavItem[] = [
-  { id: "talents", icon: "T", label: "Talents", meta: "2 points" },
   { id: "recipes", icon: "R", label: "Recipes", meta: "3 new" },
 ];
 

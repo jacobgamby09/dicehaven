@@ -257,11 +257,12 @@ export function getGatheringDieDefinition(
 
 export function getGatheringDice(
   inventory: readonly GatheringDieInstance[],
-  loadout: readonly string[],
+  loadout: readonly (string | null)[],
 ): readonly DieDefinition[] {
   const byId = new Map(inventory.map((instance) => [instance.id, instance]));
 
   return loadout.flatMap((instanceId) => {
+    if (instanceId === null) return [];
     const instance = byId.get(instanceId);
     return instance ? [getGatheringDieDefinition(instance)] : [];
   });

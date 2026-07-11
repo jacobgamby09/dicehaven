@@ -17,6 +17,7 @@ Sprogregel: GDD'en er på dansk (arbejdssprog). **Al spiller-vendt tekst i spill
 *Revision 2026-07-10 (2): “Upgrade Rush” gør gathering-dice fysiske og individuelt opgraderbare, udvider startterningen til seks konkrete face-trin, tilføjer fire roll-speed-trin og tre crew-slots samt fastlægger hybridmodellen for Tier 2 (§7.1–§7.4, §9, §14).*
 *Revision 2026-07-10 (3): Første Tier 2-slice er konkretiseret og implementeret med Oakheart Axe/Copper Prospector, Oak Logs/Copper Ore, fysisk crafting, Level 5-equip-gate og bench/swap-loadouts (§7.3–§7.4, §9, §13).*
 *Revision 2026-07-10 (4): Post-boss-loopet er lukket med blueprint-reveal, Frontier Forge, Copper Longsword/Oakguard Shield og Dire Wolf som første Wolf Den-balanceanker (§10, §11.4–§11.6, §12–§14).*
+*Revision 2026-07-11: Det smalle Upgrade Workshop er erstattet af Dice Rack og skill-specifikke Skill Trees. Gathering-face-upgrades deles nu pr. dice-blueprint, mens fysiske instanser fortsat ejes og udstyres individuelt (§7.3–§8, §12).*
 
 ---
 
@@ -75,11 +76,10 @@ Spillets vigtigste anti-modsigelses-regel. Hver upgrade-akse ejer ÉT domæne, s
 | **Skill-interne upgrades** (slibninger, roll speed, gathering-slots) | **XP** (skill-bundet, tjenes pr. rul) | Skillens egen styrke | 0→1 Wood, Second Slot, 4,0s→3,5s |
 | **Opskrifter** (nye terningtyper, gear, bygninger) | **Ressourcer** (cross-skill) | Verden/meta-spillet | Woodcutter's Axe, Workshop, Training Sword |
 | **Combat dice** (gear, §11.5) | **Crafting eller loot + Combat Level-gate** | Combat-styrke og collection | Craft Training Sword, find Wolf Fang, equip ved Level 3 |
-| **Talents** (fra skill levels, gratis) | Levels (livstids-XP) | Unlocks & mekanikker | Unlock Bow Die-opskrift, unlock auto-retreat |
 | **Buildings** | Ressourcer + combat-materialer | Multipliers & systemer | +10% wood, unlock combat dice |
 | **Loadout** | — | Combat-sammensætning | Hvilke dice udfylder dine combat slots |
 
-Talents indeholder ALDRIG "+X%"-nodes — procenter bor i buildings, rå tal bor på terningerne. Ressourcer bruges ALDRIG på en gathering-skills interne upgrades. **Combat dice er gear og collection.** De craftes med ressourcer eller findes som loot; Combat Level afgør, om de kan udstyres. Bedre faces kommer fra nye terninger og tiers, ikke ved at købe face-upgrades på en ejet combat die.
+Skill Trees indeholder ALDRIG generiske "+X%"-nodes — procenter bor i buildings, rå tal bor i blueprint-faces og konkrete roll-regler. Ressourcer bruges ALDRIG på en gathering-skills interne upgrades. **Combat dice er gear og collection.** De craftes med ressourcer eller findes som loot; Combat Level afgør, om de kan udstyres. Bedre combat-faces kommer fra nye terninger og tiers, ikke ved at købe face-upgrades på en ejet combat die.
 
 ## 3.5 Ingen straf
 
@@ -93,7 +93,7 @@ Ingen threat, intet upkeep, ingen hard failure, ingen game over. At tabe til en 
 
 **Choice loop (minutter):** Se næste upgrade/opskrift → køb (og SE terningen/settlementen ændre sig) → eller skift aktiv skill, fordi planen kræver en anden ressource.
 
-**Session loop (10-30 min):** Ny terning → nyt slot → ny bygning → nyt talent → klar til næste combat-forsøg.
+**Session loop (10-30 min):** Ny blueprint-node → nyt slot → ny terning → ny bygning → klar til næste combat-forsøg.
 
 **Arc loop (timer):** Gather → Upgrade → Craft → **Fight** → Unlock → Expand → Repeat. Hver boss åbner næste lag.
 
@@ -106,7 +106,7 @@ Disse regler må ingen fremtidig feature bryde. Ændringer kræver en ny GDD-ver
 1. **XP kommer KUN fra at udføre skillen.** Gathering-XP findes både som spendable XP til interne upgrades og lifetime XP til levels. Combat XP er lifetime-only: det bruges aldrig, men bestemmer hvilke combat dice der må udstyres.
 2. **Én aktiv skill ad gangen** — inklusive Combat. Passiv produktion (post-boss-1) er kapp'et og bygningsdrevet.
 3. **Prisregler:** Skill-interne upgrades — inklusive gathering-slots — koster skillens egen XP. Bygninger, nye terningtyper og crafted combat dice koster ressourcer fra flere skills. Combat dice opgraderes ikke individuelt; stærkere terninger craftes eller findes som loot og gates af Combat Level. Store unlocks kræver derudover boss trophies. Ressourcer bruges aldrig på en gathering-skills interne upgrades.
-4. **Én akse, én rolle** (§3.4). Talents giver aldrig procenter; dice-tal bor på terningerne.
+4. **Én akse, én rolle** (§3.4). Skill Trees ejer skillens XP-upgrades; buildings ejer procenter; fysiske dice og blueprints ejer face-tal.
 5. **Ingen skat:** intet upkeep, ingen afgifter, intet forfald. Alt forbrug er køb, spilleren vælger.
 6. **Soft failure:** boss-nederlag koster aldrig loot/XP; kun boss-encounterens HP resetter (zone-fremgang består).
 7. **Motor-renhed:** Al spillogik i `src/engine/` (ren TS, ingen React). Seeded RNG — samme seed + samme handlinger = samme rul. `tick(state, elapsedMs)` er hele tidsmodellen; offline er senere ét stort kald.
@@ -143,11 +143,11 @@ Progressionens motor er afstanden mellem terningen, du har, og terningen, du kan
 
 ## 7.3 Slibninger (face upgrades)
 
-Hver fysisk gathering-terning har sin **egen slibe-ladder** defineret som data. M1-startterningerne bruger seks konkrete trin med priserne **5 / 8 / 12 / 18 / 28 / 45 XP**: `[0,0,0,1,1,1] → [1,1,1,2,2,2]`, én synlig side ad gangen. En ny crew-terning starter uslebet; forbedringerne følger altid den konkrete terning-instans og påvirker ikke andre kopier. Ladderen er terningens levetid — når den er tom, er næste horisont en ny specialist- eller tier-terning.
+Hver gathering-terningtype har en **fælles blueprint-ladder** defineret som data. M1-startterningerne bruger seks konkrete trin med priserne **5 / 8 / 12 / 18 / 28 / 45 XP**: `[0,0,0,1,1,1] → [1,1,1,2,2,2]`, én synlig side ad gangen. Et køb forbedrer alle nuværende og fremtidige kopier af samme type; den fysiske instans ejer fortsat sin plads i inventory og loadout, men spilleren skal ikke genslibe identiske værktøjer. Når blueprint-ladderen er tom, er næste horisont en ny specialist- eller tier-terning.
 
 ## 7.4 Slots og tiers
 
-**Gathering-slots** (antal terninger, der ruller) er skill-interne upgrades købt med skillens spendable XP og er en af de vigtigste milestones. Hver skill starter med én fysisk terning; Second Slot koster 35 XP og Third Slot 180 XP, og hvert køb leverer straks en ny uslebet startterning. Hver skill ejer sit eget inventory og loadout, så terninger senere kan bænkes og udskiftes efter den ressource, spilleren mangler.
+**Gathering-slots** (antal terninger, der ruller) er skill-interne upgrades købt med skillens spendable XP og er en af de vigtigste milestones. Hver skill starter med én fysisk terning; Second Slot koster 35 XP og Third Slot 180 XP, og hvert køb leverer straks en ny startterning, der arver det aktuelle blueprint-niveau. Hver skill ejer sit eget inventory og loadout, så terninger kan bænkes, slots kan stå tomme, og loadoutet kan justeres efter den ressource, spilleren mangler.
 
 **Tier 2 bruger en hybrid-gate:** Combat/boss progression giver blueprintet, skillens lifetime Level afgør om tier-terningen må bruges, og selve terningen craftes fysisk. Den første T2-terning koster T1-ressourcer + Monster Parts og kræver aldrig sin egen T2-output; dermed undgås et bootstrap-deadlock. T2 er specialistvalg, ikke en automatisk erstatning: T1-terninger forbliver relevante til basisressourcen, mens eksempelvis Oak- og Copper-dice vægter deres navngivne T2-ressource.
 
@@ -171,22 +171,23 @@ Dice XP/levels og evolutions er **parkeret** (§17) — slibe-ladders + tiers d�
 
 ---
 
-# 8. Talents
+# 8. Skill Trees
 
-Hver skill får et lille talent-træ. **Talent points kommer fra skill levels** (1 pr. level; nodes koster 1-2).
+Hver gathering-skill har et stort, visuelt **Skill Tree**, der er den primære shop for skillens spendable XP. Det er ikke et ekstra talent-point-system: de eksisterende incremental upgrades — face-forbedringer, roll speed og dice-slots — er selve nodestrukturen.
 
-Node-typer (jf. §3.4 — aldrig procenter):
+Første version har **20 synlige nodes pr. gathering-skill**:
 
-* **Unlock-nodes:** åbner en opskrift, en ressource eller en terning ("Fletcher: unlocks the Bow Die recipe")
-* **Mekanik-nodes:** ændrer en regel ("Auto-Retreat: combat retreats automatically at 25% HP", "Sure Hand: Stone dice can't roll 0")
-* **Keystones** (1 pr. gren): definerer en spillestil ("Loadout Master: +1 saved combat loadout, switch mid-zone")
+* 6 face-nodes til startterningens blueprint
+* 4 roll-speed-nodes
+* Second og Third Slot som store milestones
+* En synlig boss/blueprint-gate til Tier 2
+* 6 face-nodes til specialist-terningens blueprint
 
-Omfang: **4-6 nodes pr. træ i første version** — få og fede. Træerne vokser med acts, ikke før. Kanonisk eksempel (Woodcutting, illustrativt):
+Alle senere nodes er synlige som aspiration, men kun den næste node på en gren kan købes. Tidlige nodes ligger tæt og billigt; afstanden og priserne vokser frem mod speed-, slot- og Tier 2-milestones. Skill Trees åbnes fra skill-headeren ved siden af **Make Active** og viser altid disponibel skill-XP.
 
-1. *Keen Edge* (L4) — forlænger begge øksers slibe-ladders med 2 trin
-2. *Timber!* (L6) — unlocks Third Slot-opskriften
-3. *Fletcher* (L8) — unlocks Bow Die-opskriften (combat)
-4. *Heartwood* (L10, keystone) — Ancient-faces: nye slibe-trin med rare wood
+Den tekniske struktur genbruges, men hver skill får sin egen visuelle metafor: Woodcutting vokser gennem rødder, stamme og krone; Mining bevæger sig gennem en mineskakt med klippelag, bjælker og krystaller. Købte forbindelser lyser op, tilgængelige paths pulserer diskret, og reduceret animation respekteres.
+
+Senere mechanic-changing nodes som rerolls, crit harvest og specialiseringer udvider de eksisterende grene; de bliver ikke en separat valuta eller en konkurrerende menu.
 
 ---
 
@@ -309,17 +310,18 @@ Zoner er kurrikulum: hver zone tester én ting og unlocker svaret på den næste
 
 # 12. UI
 
-Bygger videre på det implementerede mobil-first-layout (topbar med ressource-countere + flyvende ressourcer, foldbar sidemenu, dice tray med progress-bar, XP-bar pr. skill, upgrade-panel, terning-inspektor med alle sider i tekst).
+Bygger videre på det implementerede mobil-first-layout (topbar med ressource-countere + flyvende ressourcer, foldbar sidemenu, dice tray med progress-bar og XP-bar pr. skill). Det gamle smalle Upgrade Workshop-panel er fjernet; dice tray bruger nu hele arbejdsbredden.
 
 Udvidelser pr. milestone:
 
-* **Sidemenuen** bliver navigationen: Skills-listen + **Combat** (med zone-status) + **Settlement** + **Talents**-sektioner
+* **Sidemenuen** er navigationen til Skills, **Combat**, **Settlement** og tværgående opskrifter. Skill Trees åbnes lokalt fra den relevante skill-header, så konteksten aldrig mistes.
+* **Dice Rack:** stort overlay med aktive slots, fysisk inventory, filtre, face-inspector, equip/unequip/swap og synlige Tier 2-blueprints. Tomme slots producerer og træner ikke.
+* **Skill Tree:** stort tematisk overlay med organisk node-canvas, forbindelser, tydelige locked/reachable/ready/purchased-states og et fast detailpanel med før/efter, pris og krav.
 * **Combat-skærm**: genbruger dice tray-komponenten; tilføjer fjende-kort (navn, HP-bar, attack-telegraf), spillerens HP-bar, zone-progress-bar, loadout-vælger og en kompakt "dps ind/ud"-linje (Risk 3-mitigering: man skal kunne SE, hvorfor man taber)
 * **Impact-kontrakt:** Damage, Block og Light anvendes mekanisk ved terningens visuelle landing — aldrig før. Enemy attacks venter, mens et player-roll er i luften; player-roll har prioritet ved præcis samtidighed.
 * **Kill-feedback:** normale kills viser en kort enemy-transition og loot-popup, mens næste encounter starter. Run-dashboardet viser akkumulerede kills, XP, Monster Parts og dice drops.
 * **Combat-die inspector:** alle seks faces, gennemsnit, source, ownership og level-gate skal kunne ses før equip. En tidligt droppet locked die vises som et kommende mål, ikke som skjult indhold.
 * **Defeat-feedback:** resultatkortet peger på den sandsynlige loadout-svaghed (manglende Block, for lav Damage eller generelt for svagt gear) uden at tage progression fra spilleren.
-* **Talents**: ét træ pr. skill, nodes som kort med krav og effekt i klartekst
 * Faste regler: dialog-semantik + Escape, ≥4,5:1 kontrast på læsbar tekst, engelsk copy, reduceret animation respekteres, tal formateres K/M ved vækst
 
 ---
@@ -330,17 +332,17 @@ Hver milestone er spilbar og playtestes, før næste påbegyndes. Udviklingsræk
 
 ## M0 — Auto-roll-kernen ✅ *(implementeret og verificeret i greenfield-versionen)*
 
-Woodcutting + Mining, individuelle fysiske dice, seks XP-betalte face-trin pr. startterning, fire roll-speed-trin, Second/Third Slot, levels, mobil-first UI og seeded engine. Den målbare benchmark giver de første køb ved ca. 20 / 52 / 100 sekunder og 12–16 køb i en repræsentativ første halve time. Svarede på: *"Er auto-roll + konkrete upgrades tilfredsstillende?"*
+Woodcutting + Mining, individuelle fysiske dice, seks XP-betalte blueprint-face-trin pr. startterning, fire roll-speed-trin, Second/Third Slot, levels, Dice Rack, visuelle Skill Trees, mobil-first UI og seeded engine. Den målbare benchmark giver de første køb ved ca. 20 / 52 / 100 sekunder og 12–16 køb i en repræsentativ første halve time. Svarede på: *"Er auto-roll + konkrete upgrades tilfredsstillende?"*
 
 ## M1 — Combat vertical slice ✅ *(spilbar end-to-end; fortsat åben for feel-playtest)*
 
 Workshop-bygning → crafted basis-dice (Training Sword, Wooden Shield, Torch) → Combat Level-gates → Combat-skill → Forest Edge (3 fjender, zone-bar) → dropped dice → Forest Brute → tydelig blueprint-reveal → Barracks/T2 gathering → Frontier Forge → T2 combat dice → Dire Wolf i Wolf Den. Tick-resolution jf. §11.2; alle combat dice craftes eller droppes jf. §11.5.
 **Tester:** *Føles combat som hovedprogression? Er boss-nederlag motiverende ("jeg ved, hvad jeg skal forbedre")? Og er det spændende at bygge en fysisk dice collection med synlige level-gates?*
 
-## M2 — Talents + sustain
+## M2 — Skill Tree-mekanikker + sustain
 
-Talent-træer (Woodcutting, Mining, Combat — 4-6 nodes hver, kun unlock/mekanik-nodes), Farming-skill (Crop Die, herbs), Bandage Die (Cleanse) + Bow Die (First Strike, via Fletcher-talent), hide/bone-materialer, Zone 2 (Wolf Den, Alpha Wolf).
-**Tester:** *Er talents milepæle frem for regneark? Trækker Zone 2 spilleren over i Farming af egen vilje?*
+Udvid de eksisterende Skill Trees med mechanic-changing nodes som rerolls, crit harvest og konkrete unlocks; tilføj Combat-progressionens tilsvarende visuelle struktur, Farming-skill (Crop Die, herbs), Bandage Die (Cleanse), Bow Die (First Strike), hide/bone-materialer og Alpha Wolf i Wolf Den.
+**Tester:** *Føles de nye nodes som ændringer af spillestilen frem for et regneark? Trækker Zone 2 spilleren over i Farming af egen vilje?*
 
 ## M3 — Settlement-laget
 

@@ -96,15 +96,6 @@ export function App(): React.JSX.Element {
         />
       );
       break;
-    case "talents":
-      page = (
-        <PreviewPage
-          description="Concrete unlocks and mechanic-changing choices for every skill."
-          eyebrow="Progression"
-          title="Talents"
-        />
-      );
-      break;
     case "recipes":
       page = (
         <PreviewPage

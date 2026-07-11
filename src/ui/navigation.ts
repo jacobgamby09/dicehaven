@@ -3,6 +3,4 @@ export type ViewId =
   | "mining"
   | "settlement"
   | "combat"
-  | "talents"
   | "recipes";
-
