@@ -5985,6 +5985,613 @@ progress::-moz-progress-bar {
   }
 }
 
+/* Shared visual language for every physical Combat Die. */
+.combat-die-visual {
+  --die-accent: #a95b46;
+  --die-deep: #65362e;
+  --die-glow: rgba(190, 82, 55, 0.3);
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  border: 3px solid var(--die-accent);
+  border-radius: 24%;
+  color: #fff5df;
+  background: linear-gradient(145deg, #b89069, #6f5542);
+  box-shadow:
+    inset 4px 4px rgba(255, 250, 224, 0.25),
+    inset -4px -4px rgba(41, 31, 25, 0.22),
+    0 7px 0 -3px var(--die-deep),
+    0 10px 20px rgba(44, 34, 27, 0.18);
+}
+
+.combat-die-visual--small {
+  width: 46px;
+  height: 46px;
+  border-width: 2px;
+  border-radius: 13px;
+}
+
+.combat-die-visual--medium {
+  width: 72px;
+  height: 72px;
+  border-radius: 19px;
+}
+
+.combat-die-visual--roll {
+  width: 92px;
+  height: 92px;
+  border-radius: 23px;
+  box-shadow:
+    inset 5px 5px rgba(255, 250, 224, 0.27),
+    inset -5px -5px rgba(41, 31, 25, 0.24),
+    0 9px 0 -3px var(--die-deep),
+    0 15px 24px rgba(0, 0, 0, 0.24);
+}
+
+.combat-die-visual--damage {
+  --die-accent: #b85f49;
+  --die-deep: #6f342b;
+  --die-glow: rgba(213, 83, 56, 0.34);
+}
+
+.combat-die-visual--block {
+  --die-accent: #4e7c7d;
+  --die-deep: #294e52;
+  --die-glow: rgba(71, 135, 139, 0.32);
+}
+
+.combat-die-visual--utility {
+  --die-accent: #c79237;
+  --die-deep: #785822;
+  --die-glow: rgba(226, 173, 65, 0.36);
+}
+
+.combat-die-visual--iron {
+  background: linear-gradient(145deg, #c6c0aa, #7d776c 58%, #59584f);
+}
+
+.combat-die-visual--wood {
+  background:
+    repeating-linear-gradient(96deg, rgba(83, 55, 31, 0.13) 0 2px, transparent 2px 8px),
+    linear-gradient(145deg, #d7b47c, #946940 62%, #6b4c36);
+}
+
+.combat-die-visual--ember {
+  background:
+    radial-gradient(circle at 66% 32%, #fff0a6 0 5%, transparent 16%),
+    linear-gradient(145deg, #e9bd5f, #bf6f2f 58%, #713f25);
+}
+
+.combat-die-visual--bone {
+  color: #5a4032;
+  background:
+    linear-gradient(35deg, transparent 42%, rgba(100, 72, 53, 0.14) 43% 47%, transparent 48%),
+    linear-gradient(145deg, #eee1bc, #c7ac7b 60%, #957455);
+}
+
+.combat-die-visual--leather {
+  background:
+    radial-gradient(circle, rgba(255, 230, 176, 0.2) 0 1px, transparent 1.5px) 0 0 / 8px 8px,
+    linear-gradient(145deg, #b9875f, #76513e 62%, #4f3b34);
+}
+
+.combat-die-visual--cleaver {
+  background:
+    linear-gradient(125deg, transparent 45%, rgba(101, 25, 22, 0.38) 46% 52%, transparent 53%),
+    linear-gradient(145deg, #b9aaa0, #71655f 58%, #423d3a);
+}
+
+.combat-die-visual--copper {
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 224, 177, 0.38), transparent 20%),
+    linear-gradient(145deg, #df9c6a, #a9553d 60%, #71392f);
+}
+
+.combat-die-visual--oak {
+  background:
+    repeating-linear-gradient(88deg, rgba(45, 64, 38, 0.17) 0 2px, transparent 2px 9px),
+    linear-gradient(145deg, #b29b65, #6f7047 60%, #44533c);
+}
+
+.combat-die-visual--claw {
+  background:
+    linear-gradient(120deg, transparent 35%, rgba(226, 225, 203, 0.33) 36% 39%, transparent 40% 55%, rgba(226, 225, 203, 0.25) 56% 59%, transparent 60%),
+    linear-gradient(145deg, #7d8780, #465651 60%, #273835);
+}
+
+.combat-die-visual--tier-2 {
+  outline: 2px solid color-mix(in srgb, var(--die-accent) 68%, #f5da8d);
+  outline-offset: 2px;
+}
+
+.combat-die-visual--rare::after,
+.combat-die-visual--boss::after {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  z-index: 3;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f4d783;
+  box-shadow: 0 0 8px rgba(244, 215, 131, 0.8);
+  content: "";
+}
+
+.combat-die-visual--boss::after {
+  border-radius: 1px;
+  background: #d66a4e;
+  transform: rotate(45deg);
+}
+
+.combat-die-visual__surface,
+.combat-die-visual__effect,
+.combat-die-visual__particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.combat-die-visual__surface {
+  z-index: 1;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent 42%);
+}
+
+.combat-die-visual__effect {
+  z-index: 2;
+  opacity: 0;
+}
+
+.combat-die-visual--damage .combat-die-visual__effect {
+  inset: -25%;
+  width: 25%;
+  background: linear-gradient(90deg, transparent, rgba(255, 230, 195, 0.9), transparent);
+  transform: translateX(-180%) rotate(32deg);
+}
+
+.combat-die-visual--block .combat-die-visual__effect {
+  inset: 13%;
+  border: 2px solid rgba(205, 243, 232, 0.75);
+  border-radius: 50%;
+  transform: scale(0.55);
+}
+
+.combat-die-visual--utility .combat-die-visual__effect {
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 238, 154, 0.85), transparent 68%);
+  transform: scale(0.55);
+}
+
+.combat-die-visual.is-active,
+.combat-die-visual--roll:hover {
+  box-shadow:
+    inset 4px 4px rgba(255, 250, 224, 0.28),
+    inset -4px -4px rgba(41, 31, 25, 0.22),
+    0 7px 0 -3px var(--die-deep),
+    0 0 20px var(--die-glow);
+}
+
+.combat-die-visual.is-active .combat-die-visual__effect,
+.combat-die-visual.is-rolling .combat-die-visual__effect {
+  opacity: 1;
+}
+
+.combat-die-visual--damage.is-active .combat-die-visual__effect,
+.combat-die-visual--damage.is-rolling .combat-die-visual__effect {
+  animation: combat-slash 720ms ease-out both;
+}
+
+.combat-die-visual--block.is-active .combat-die-visual__effect,
+.combat-die-visual--block.is-rolling .combat-die-visual__effect {
+  animation: combat-guard-ripple 820ms ease-out both;
+}
+
+.combat-die-visual--utility.is-active .combat-die-visual__effect,
+.combat-die-visual--utility.is-rolling .combat-die-visual__effect {
+  animation: combat-spark-glow 900ms ease-in-out both;
+}
+
+.combat-die-visual__content {
+  position: relative;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-family: Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 900;
+  text-shadow: 0 1px 2px rgba(31, 25, 20, 0.32);
+}
+
+.combat-die-visual--small .combat-die-visual__content {
+  font-size: 0.75rem;
+}
+
+.combat-die-visual--roll .combat-die-visual__content {
+  font-size: 1.7rem;
+}
+
+.combat-die-visual__content > strong {
+  font-size: 0.85em;
+}
+
+.combat-die-visual__rolling {
+  font-family: inherit;
+  font-size: 0.7em;
+  letter-spacing: 0.12em;
+}
+
+.combat-die-visual__particles {
+  z-index: 5;
+  opacity: 0;
+}
+
+.combat-die-visual__particles i {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--die-accent) 45%, #fff3b4);
+  box-shadow: 0 0 6px var(--die-glow);
+}
+
+.combat-die-visual__particles i:nth-child(1) {
+  top: 18%;
+  left: 20%;
+}
+
+.combat-die-visual__particles i:nth-child(2) {
+  top: 28%;
+  right: 17%;
+}
+
+.combat-die-visual__particles i:nth-child(3) {
+  right: 30%;
+  bottom: 15%;
+}
+
+.combat-die-visual.is-rolling .combat-die-visual__particles {
+  opacity: 1;
+  animation: combat-particles 680ms ease-out both;
+}
+
+.combat-die__inspect {
+  display: block;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.combat-die__inspect:hover .combat-die-visual,
+.combat-die__inspect:focus-visible .combat-die-visual {
+  transform: translateY(-2px);
+}
+
+.combat-face,
+.crafting-face {
+  padding: 0;
+  cursor: pointer;
+}
+
+.combat-face:hover,
+.combat-face:focus-visible,
+.crafting-face:hover,
+.crafting-face:focus-visible {
+  border-color: color-mix(in srgb, currentColor 52%, transparent);
+  box-shadow: 0 5px 13px rgba(52, 61, 48, 0.1);
+  transform: translateY(-1px);
+}
+
+.face-info-layer {
+  position: fixed;
+  z-index: 140;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.face-info-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgba(22, 31, 26, 0.62);
+  backdrop-filter: blur(5px);
+  cursor: default;
+}
+
+.face-info-dialog {
+  --face-accent: #b85f49;
+  --face-soft: #f1ded6;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  width: min(520px, 100%);
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+  padding: 20px;
+  border: 1px solid color-mix(in srgb, var(--face-accent) 42%, #d8d2bf);
+  border-radius: 20px;
+  color: #364238;
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--face-soft) 70%, transparent), transparent 40%),
+    #f9f5e9;
+  box-shadow: 0 30px 80px rgba(20, 28, 23, 0.32);
+  animation: face-dialog-in 180ms ease-out both;
+}
+
+.face-info-dialog--block {
+  --face-accent: #4e7c7d;
+  --face-soft: #d7e9e4;
+}
+
+.face-info-dialog--utility {
+  --face-accent: #c79237;
+  --face-soft: #f2e4b8;
+}
+
+.face-info-dialog__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.face-info-dialog__header .eyebrow {
+  color: color-mix(in srgb, var(--face-accent) 78%, #536052);
+}
+
+.face-info-dialog__header h2 {
+  margin: 4px 0 0;
+  color: #2f3d34;
+  font-size: 1.55rem;
+}
+
+.face-info-dialog__close {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(58, 69, 56, 0.15);
+  border-radius: 50%;
+  color: #536056;
+  background: rgba(255, 253, 244, 0.8);
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+
+.face-info-dialog__hero {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  margin: 18px 0;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--face-accent) 22%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--face-soft) 48%, #fffdf4);
+  gap: 14px;
+}
+
+.face-info-dialog__hero p {
+  margin: 0;
+  color: #606b61;
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.face-info-rules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  gap: 8px;
+}
+
+.face-info-rules > div {
+  padding: 10px 11px;
+  border: 1px solid rgba(63, 76, 59, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 253, 245, 0.78);
+}
+
+.face-info-rules dt {
+  color: #8a9288;
+  font-size: 0.53rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.face-info-rules dd {
+  margin: 3px 0 0;
+  color: #3e4e42;
+  font-size: 0.67rem;
+  font-weight: 750;
+}
+
+.face-info-matching {
+  margin: 11px 0;
+  color: #778078;
+  font-size: 0.61rem;
+  text-align: center;
+}
+
+.face-info-picker {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.face-info-picker button {
+  display: grid;
+  min-height: 52px;
+  align-content: center;
+  justify-items: center;
+  border: 1px solid rgba(65, 76, 60, 0.14);
+  border-radius: 9px;
+  color: #58665a;
+  background: #fffdf5;
+  cursor: pointer;
+}
+
+.face-info-picker button[aria-pressed="true"] {
+  border-color: var(--face-accent);
+  color: color-mix(in srgb, var(--face-accent) 82%, #273429);
+  background: var(--face-soft);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--face-accent) 15%, transparent);
+}
+
+.face-info-picker small {
+  color: #9a9f96;
+  font-size: 0.48rem;
+}
+
+.face-info-picker strong {
+  font-family: Georgia, serif;
+  font-size: 0.66rem;
+}
+
+.face-info-dialog__footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-top: 14px;
+  gap: 8px;
+}
+
+.face-info-dialog__footer button {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid rgba(65, 78, 61, 0.15);
+  border-radius: 9px;
+  color: #536455;
+  background: #edece0;
+  cursor: pointer;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.face-info-dialog__footer span {
+  color: #818982;
+  font-size: 0.57rem;
+  white-space: nowrap;
+}
+
+@keyframes combat-slash {
+  from { transform: translateX(-180%) rotate(32deg); }
+  to { transform: translateX(520%) rotate(32deg); }
+}
+
+@keyframes combat-guard-ripple {
+  0% { opacity: 0; transform: scale(0.45); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.45); }
+}
+
+@keyframes combat-spark-glow {
+  0%, 100% { opacity: 0.25; transform: scale(0.55); }
+  45% { opacity: 1; transform: scale(1.18); }
+}
+
+@keyframes combat-particles {
+  from { opacity: 0; transform: scale(0.5) translateY(8px); }
+  35% { opacity: 1; }
+  to { opacity: 0; transform: scale(1.35) translateY(-12px); }
+}
+
+@keyframes face-dialog-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 680px) {
+  .combat-die-visual--roll {
+    width: clamp(70px, 22vw, 92px);
+    height: clamp(70px, 22vw, 92px);
+  }
+
+  .face-info-layer {
+    align-items: end;
+    padding: 0;
+  }
+
+  .face-info-dialog {
+    width: 100%;
+    max-height: min(86dvh, 760px);
+    padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 22px 22px 0 0;
+    animation-name: face-sheet-in;
+  }
+
+  .face-info-dialog::before {
+    display: block;
+    width: 42px;
+    height: 4px;
+    margin: -7px auto 12px;
+    border-radius: 999px;
+    background: rgba(61, 73, 60, 0.2);
+    content: "";
+  }
+
+  .face-info-dialog__hero {
+    grid-template-columns: 64px minmax(0, 1fr);
+    margin: 13px 0;
+    padding: 11px;
+  }
+
+  .face-info-dialog__hero .combat-die-visual--medium {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+  }
+
+  .face-info-rules {
+    gap: 6px;
+  }
+
+  .face-info-rules > div {
+    padding: 8px 9px;
+  }
+
+  .face-info-picker {
+    gap: 4px;
+  }
+
+  .face-info-picker button {
+    min-height: 47px;
+    padding: 3px;
+  }
+}
+
+@keyframes face-sheet-in {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .combat-die-visual__effect,
+  .combat-die-visual__particles,
+  .face-info-dialog {
+    animation: none !important;
+  }
+}
+
 /* Roll timer belongs to the Dice Tray controls, not the felt stage. */
 .roll-speed-hud {
   width: 100%;

@@ -8,6 +8,33 @@ Dette er den løbende implementeringslog for greenfield-versionen i denne mappe.
 - **M1 — Combat vertical slice:** Spilbar end-to-end gennem Forest Brute, Tier 2 crafting, Frontier Forge og første Wolf Den-encounter. Næste checkpoint er bruger-playtest og lyd/juice baseret på den faktiske oplevelse.
 - **M2+ — Skill Tree-mekanikker, sustain og dybere settlement:** Ikke påbegyndt.
 
+## 2026-07-11 — Combat Dice-identitet & Face Info
+
+### Tilføjet
+
+- Alle ti Combat Dice har nu datadrevet `material`, `tier`, `rarity` og `motion` oven på deres eksisterende rolle.
+- Ny fælles **CombatDieVisual** bruges i Crafting, Combat Arsenal og selve combat-rullet, så samme fysiske die altid har samme identitet.
+- Damage bruger rød/kobber-accent og strike/slash-impact; Block bruger blågrøn/stål og guard-ripple; Utility bruger rav/guld, glow og partikler.
+- Materialer giver individuelle overflader til iron, wood, ember, bone, leather, cleaver, copper, oak og claw. Tier 2 samt rare/boss dice får ekstra ramme eller markering.
+- Nyt responsivt **Face Info**-overlay: centreret dialog på desktop og bottom sheet på mobil.
+- Face Info viser konkret effekt, plain-language regeltekst, `1 of 6` chance, resolution-timing, varighed, keyword og antal faces med samme præcise resultat.
+- Overlayet understøtter direkte valg af alle seks faces, forrige/næste, backdrop, close, Escape, focus trap og fokus-retur.
+- Landede Combat Dice kan åbne Face Info; terninger er ikke klikbare under roll-animationen.
+
+### Ændret
+
+- Alle Combat faces i Crafting og Combat Arsenal er nu semantiske knapper frem for statiske symbolfelter.
+- Block-reglen forklarer eksplicit, at Block absorberer incoming Damage og varer, til den er brugt.
+- Light-reglen forklarer Scouted, det ekstra loot-roll og at effekten ikke stacker.
+- Reduced-motion slår rolleanimationer, partikler og overlay-transition fra, men bevarer alle states og informationer.
+
+### Verificeret
+
+- Browser-QA viser fem forskellige craftable Combat Dice-identiteter uden overflow eller Vite error overlay.
+- Damage, Block og Utility bruger henholdsvis `strike`, `guard` og `spark` i Crafting og combat-tray.
+- Face Info er verificeret for Block og Utility, inklusive body-scroll lock, initialt close-fokus og fokus-retur til det valgte face.
+- Production-build og hele testsuiten består: 9 testfiler / 64 tests.
+
 ## 2026-07-11 — Dedikeret Crafting-katalog
 
 ### Tilføjet

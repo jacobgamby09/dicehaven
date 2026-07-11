@@ -1,7 +1,9 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useState } from "react";
 import { COMBAT_DICE, type CombatDieId, type CombatRollEvent } from "../engine/combat";
 import type { RollPhase } from "../hooks/useRollClock";
 import { CombatDie } from "./CombatDie";
+import { FaceInfoOverlay } from "./FaceInfoOverlay";
 
 interface CombatDiceTrayProps {
   event: CombatRollEvent | null;
@@ -17,12 +19,17 @@ export function CombatDiceTray({
   progress,
 }: CombatDiceTrayProps): React.JSX.Element {
   const reduceMotion = useReducedMotion();
+  const [faceInfo, setFaceInfo] = useState<{
+    dieId: CombatDieId;
+    faceIndex: number;
+  } | null>(null);
   const equippedDice = loadout.flatMap((dieId) =>
     dieId === null ? [] : [COMBAT_DICE[dieId]],
   );
 
   return (
-    <section aria-labelledby="combat-dice-title" className="combat-dice-tray">
+    <>
+      <section aria-labelledby="combat-dice-title" className="combat-dice-tray">
       <header>
         <div>
           <span className="eyebrow">Active loadout</span>
@@ -44,6 +51,12 @@ export function CombatDiceTray({
           <CombatDie
             definition={die}
             key={`${die.id}-${index}`}
+            onInspectFace={() => {
+              const result = event?.results[index];
+              if (result) {
+                setFaceInfo({ dieId: die.id, faceIndex: result.faceIndex });
+              }
+            }}
             phase={phase}
             result={event?.results[index]}
           />
@@ -86,6 +99,15 @@ export function CombatDiceTray({
           ? "Your loadout is ready for its first roll."
           : `Roll ${event.id}: ${event.damage} Damage · ${event.block} Block${event.light > 0 ? " · Light" : ""}`}
       </footer>
-    </section>
+      </section>
+      {faceInfo ? (
+        <FaceInfoOverlay
+          definition={COMBAT_DICE[faceInfo.dieId]}
+          initialFaceIndex={faceInfo.faceIndex}
+          key={`${faceInfo.dieId}-${faceInfo.faceIndex}`}
+          onClose={() => setFaceInfo(null)}
+        />
+      ) : null}
+    </>
   );
 }

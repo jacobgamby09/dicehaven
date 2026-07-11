@@ -24,6 +24,7 @@ Sprogregel: GDD'en er på dansk (arbejdssprog). **Al spiller-vendt tekst i spill
 *Revision 2026-07-11 (5): Roll Speed-timeren er flyttet ind i Dice Tray'ens eksisterende lyse kontrolsektion under headeren. Den er dermed visuelt adskilt fra filt-scenen uden at fremstå som et ekstra kort oven på terningerne (§12).*
 *Revision 2026-07-11 (6): Dice Rack bruger inventoryet som primær loadout-flade. Valg af en fysisk terning viser straks equip/unequip eller et eksplicit valg af den slot, der skal erstattes; den dobbelte Active Dice Pool-oversigt er fjernet (§12).*
 *Revision 2026-07-11 (7): Al fysisk dice-crafting er samlet i en dedikeret Crafting-side med Combat Dice/Skill Dice-tabs. Workshop åbner systemet; recipes bag manglende bygninger eller undiscovered blueprints skjules, mens Settlement forklarer de kommende unlocks (§10.1, §12).*
+*Revision 2026-07-11 (8): Combat Dice har et fælles, datadrevet visuelt sprog, hvor rolle styrer farve/motion, materiale styrer overflade, og tier/rarity styrer ramme og effektintensitet. Klikbare faces åbner én fælles regel-forklaring i Crafting, Arsenal og efter combat-landing (§11.5, §12).*
 
 ---
 
@@ -288,6 +289,10 @@ Combat progression bygger et fysisk arsenal:
 5. **Crafting giver stabile basisværktøjer; drops giver specialisering.** Obligatorisk hovedprogression må aldrig afhænge af et sjældent drop. Første boss-kill giver derfor en garanteret signature die eller recipe; senere kills bruger den almindelige drop table.
 6. **Duplicates registreres fra starten.** Spilleren kan udstyre flere kopier, hvis slots og inventory tillader det. Salvage eller anden duplicate-sink er parkeret til efter M1.
 
+### Visuel identitet
+
+Combat Dice følger tre læsbare lag. **Rollen** er hovedsproget: Damage bruger røde/kobberfarvede accenter og et hurtigt strike-impact; Block bruger blågrøn/stål og en tung guard-ripple; Utility bruger rav/guld og spark/glow. **Materialet** skaber den konkrete terningidentitet — eksempelvis iron, wood, ember, bone, copper eller oak. **Tier og rarity** styrer ekstra ramme, glød og markering; boss-/rare dice må få overrides uden at bryde rollens grundsprog. Farve står aldrig alene: glyph, label og motion gentager rollen.
+
 ### M1-teringer (kanonisk prototype)
 
 | Terning | Rolle | Krav | Kilde | Faces / funktion |
@@ -338,6 +343,8 @@ Udvidelser pr. milestone:
 * **Impact-kontrakt:** Damage, Block og Light anvendes mekanisk ved terningens visuelle landing — aldrig før. Enemy attacks venter, mens et player-roll er i luften; player-roll har prioritet ved præcis samtidighed.
 * **Kill-feedback:** normale kills viser en kort enemy-transition og loot-popup, mens næste encounter starter. Run-dashboardet viser akkumulerede kills, XP, Monster Parts og dice drops.
 * **Combat-die inspector:** alle seks faces, gennemsnit, source, ownership og level-gate skal kunne ses før equip. En tidligt droppet locked die vises som et kommende mål, ikke som skjult indhold.
+* **Combat Face Info:** alle Combat Dice-faces i Crafting og Arsenal er semantiske knapper. De åbner et desktop-dialog/mobil-bottom-sheet med face-nummer, konkret effekt, chance, resolution-timing, varighed, keyword og antal identiske resultater. Forrige/næste og direkte face-valg virker uden lukning; Escape, backdrop og close lukker med fokus-retur.
+* **Combat roll-identitet:** den fælles CombatDieVisual bruges i katalog, Arsenal og selve rullet. Bevægelige dice er ikke klikbare; efter landing kan resultatet åbne samme Face Info. Reduced-motion fjerner rotation, partikel- og overlay-animationer uden at fjerne information.
 * **Defeat-feedback:** resultatkortet peger på den sandsynlige loadout-svaghed (manglende Block, for lav Damage eller generelt for svagt gear) uden at tage progression fra spilleren.
 * Faste regler: dialog-semantik + Escape, ≥4,5:1 kontrast på læsbar tekst, engelsk copy, reduceret animation respekteres, tal formateres K/M ved vækst
 

@@ -10,8 +10,9 @@ import {
   averageCombatFaceValue,
   combatFaceMark,
   combatFaceText,
-  combatRoleIcon,
 } from "../ui/combatDie";
+import { CombatDieVisual } from "./CombatDieVisual";
+import { FaceInfoOverlay } from "./FaceInfoOverlay";
 
 interface CombatArsenalProps {
   onOpenCrafting: () => void;
@@ -29,6 +30,10 @@ export function CombatArsenal({
 }: CombatArsenalProps): React.JSX.Element {
   const [inspectedDieId, setInspectedDieId] =
     useState<CombatDieId>("trainingSword");
+  const [faceInfo, setFaceInfo] = useState<{
+    dieId: CombatDieId;
+    faceIndex: number;
+  } | null>(null);
   const combat = useGameStore((state) => state.combat);
   const equipCombatDie = useGameStore((state) => state.equipCombatDie);
   const level = getLevelProgress(combat.lifetimeXp).level;
@@ -46,7 +51,8 @@ export function CombatArsenal({
   );
 
   return (
-    <section aria-labelledby="combat-arsenal-title" className="combat-recipes combat-arsenal">
+    <>
+      <section aria-labelledby="combat-arsenal-title" className="combat-recipes combat-arsenal">
       <header>
         <div>
           <span className="eyebrow">Dice collection</span>
@@ -64,12 +70,12 @@ export function CombatArsenal({
       {inspectedDie && inspectedId ? (
         <>
           <article className="combat-die-inspector">
-            <div
-              aria-hidden="true"
-              className={`combat-die-inspector__die combat-die-inspector__die--${inspectedDie.role.toLowerCase()}`}
-            >
-              {combatRoleIcon(inspectedDie.role)}
-            </div>
+            <CombatDieVisual
+              active
+              decorative
+              definition={inspectedDie}
+              size="medium"
+            />
             <div className="combat-die-inspector__copy">
               <span className="eyebrow">Inspecting · {inspectedDie.role}</span>
               <h3>{inspectedDie.name}</h3>
@@ -83,14 +89,18 @@ export function CombatArsenal({
             </div>
             <div aria-label={`${inspectedDie.name} faces`} className="combat-face-grid">
               {inspectedDie.faces.map((face, index) => (
-                <span
-                  aria-label={`Face ${index + 1}: ${combatFaceText(face)}`}
+                <button
+                  aria-label={`Open information for face ${index + 1}: ${combatFaceText(face)}`}
                   className={`combat-face combat-face--${face.type}`}
                   key={`${inspectedDie.id}-face-${index + 1}`}
+                  onClick={() =>
+                    setFaceInfo({ dieId: inspectedDie.id, faceIndex: index })
+                  }
                   title={combatFaceText(face)}
+                  type="button"
                 >
                   {combatFaceMark(face)}
-                </span>
+                </button>
               ))}
               {inspectedDie.levelRequirement > level ? (
                 <strong>Equip at Combat Level {inspectedDie.levelRequirement}</strong>
@@ -114,9 +124,12 @@ export function CombatArsenal({
                   className={`combat-recipe-card combat-recipe-card--crafted${isLevelLocked ? " combat-recipe-card--locked" : ""}`}
                   key={die.id}
                 >
-                  <div className="combat-recipe-card__die" aria-hidden="true">
-                    {combatRoleIcon(die.role)}
-                  </div>
+                  <CombatDieVisual
+                    active={inspectedId === die.id}
+                    decorative
+                    definition={die}
+                    size="small"
+                  />
                   <div className="combat-die-meta">
                     <span className="combat-role">{die.role}</span>
                     <span>Level {die.levelRequirement}</span>
@@ -168,6 +181,15 @@ export function CombatArsenal({
           </button>
         </div>
       )}
-    </section>
+      </section>
+      {faceInfo ? (
+        <FaceInfoOverlay
+          definition={COMBAT_DICE[faceInfo.dieId]}
+          initialFaceIndex={faceInfo.faceIndex}
+          key={`${faceInfo.dieId}-${faceInfo.faceIndex}`}
+          onClose={() => setFaceInfo(null)}
+        />
+      ) : null}
+    </>
   );
 }

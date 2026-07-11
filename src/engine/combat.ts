@@ -23,6 +23,26 @@ export type CombatZoneId = "forestEdge" | "wolfDen";
 
 export type CombatRole = "Damage" | "Block" | "Utility";
 
+export type CombatDieMaterial =
+  | "iron"
+  | "wood"
+  | "ember"
+  | "bone"
+  | "leather"
+  | "cleaver"
+  | "copper"
+  | "oak"
+  | "claw";
+
+export type CombatMotionPreset = "strike" | "guard" | "spark";
+
+export interface CombatDieVisualDefinition {
+  material: CombatDieMaterial;
+  motion: CombatMotionPreset;
+  rarity: "common" | "rare" | "boss";
+  tier: 1 | 2;
+}
+
 export type CombatFace =
   | { type: "damage"; amount: number }
   | { type: "block"; amount: number }
@@ -37,6 +57,7 @@ export interface CombatDieDefinition {
   sourceLabel: string;
   description: string;
   faces: readonly CombatFace[];
+  visual: CombatDieVisualDefinition;
 }
 
 export interface CombatDieResult {
@@ -111,6 +132,7 @@ export const COMBAT_DICE: Readonly<Record<CombatDieId, CombatDieDefinition>> = {
     source: "crafted",
     sourceLabel: "Workshop recipe",
     description: "A reliable first weapon for the Forest Edge.",
+    visual: { material: "iron", motion: "strike", rarity: "common", tier: 1 },
     faces: [
       { type: "damage", amount: 0 },
       { type: "damage", amount: 1 },
@@ -128,6 +150,7 @@ export const COMBAT_DICE: Readonly<Record<CombatDieId, CombatDieDefinition>> = {
     source: "crafted",
     sourceLabel: "Workshop recipe",
     description: "Stores protection against the enemy's next attack.",
+    visual: { material: "wood", motion: "guard", rarity: "common", tier: 1 },
     faces: [
       { type: "block", amount: 0 },
       { type: "block", amount: 1 },
@@ -145,6 +168,7 @@ export const COMBAT_DICE: Readonly<Record<CombatDieId, CombatDieDefinition>> = {
     source: "crafted",
     sourceLabel: "Workshop recipe",
     description: "Light can Scout an enemy for one additional loot roll.",
+    visual: { material: "ember", motion: "spark", rarity: "common", tier: 1 },
     faces: [
       { type: "light", amount: 0 },
       { type: "light", amount: 0 },
@@ -162,6 +186,7 @@ export const COMBAT_DICE: Readonly<Record<CombatDieId, CombatDieDefinition>> = {
     source: "drop",
     sourceLabel: "Forest Wolf drop",
     description: "A fast, vicious die found at the Forest Edge.",
+    visual: { material: "bone", motion: "strike", rarity: "rare", tier: 1 },
     faces: [
       { type: "damage", amount: 0 },
       { type: "damage", amount: 1 },
@@ -179,6 +204,7 @@ export const COMBAT_DICE: Readonly<Record<CombatDieId, CombatDieDefinition>> = {
     source: "drop",
     sourceLabel: "Wild Boar drop",
     description: "A heavy damage die carved from a forest boar's tusk.",
+    visual: { material: "bone", motion: "strike", rarity: "rare", tier: 1 },
     faces: [
       { type: "damage", amount: 0 },
       { type: "damage", amount: 1 },
@@ -196,6 +222,7 @@ export const COMBAT_DICE: Readonly<Record<CombatDieId, CombatDieDefinition>> = {
     source: "drop",
     sourceLabel: "Bandit Scout drop",
     description: "A quick defensive die taken from a defeated scout.",
+    visual: { material: "leather", motion: "guard", rarity: "rare", tier: 1 },
     faces: [
       { type: "block", amount: 0 },
       { type: "block", amount: 1 },
@@ -213,6 +240,7 @@ export const COMBAT_DICE: Readonly<Record<CombatDieId, CombatDieDefinition>> = {
     source: "drop",
     sourceLabel: "Forest Brute first-clear reward",
     description: "The Forest Brute's signature die. Brutal, heavy and reliable.",
+    visual: { material: "cleaver", motion: "strike", rarity: "boss", tier: 1 },
     faces: [
       { type: "damage", amount: 1 },
       { type: "damage", amount: 2 },
@@ -230,6 +258,7 @@ export const COMBAT_DICE: Readonly<Record<CombatDieId, CombatDieDefinition>> = {
     source: "crafted",
     sourceLabel: "Frontier Forge recipe",
     description: "A balanced Tier 2 blade built to break into the Wolf Den.",
+    visual: { material: "copper", motion: "strike", rarity: "common", tier: 2 },
     faces: [
       { type: "damage", amount: 1 },
       { type: "damage", amount: 2 },
@@ -247,6 +276,7 @@ export const COMBAT_DICE: Readonly<Record<CombatDieId, CombatDieDefinition>> = {
     source: "crafted",
     sourceLabel: "Frontier Forge recipe",
     description: "Layered oak and copper bands built for heavier enemy attacks.",
+    visual: { material: "oak", motion: "guard", rarity: "common", tier: 2 },
     faces: [
       { type: "block", amount: 1 },
       { type: "block", amount: 1 },
@@ -264,6 +294,7 @@ export const COMBAT_DICE: Readonly<Record<CombatDieId, CombatDieDefinition>> = {
     source: "drop",
     sourceLabel: "Dire Wolf drop",
     description: "A rare Wolf Den trophy with a vicious high floor.",
+    visual: { material: "claw", motion: "strike", rarity: "rare", tier: 2 },
     faces: [
       { type: "damage", amount: 1 },
       { type: "damage", amount: 2 },

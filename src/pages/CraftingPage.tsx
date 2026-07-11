@@ -1,5 +1,11 @@
 import { useRef, useState } from "react";
-import { COMBAT_DICE, type CombatRole } from "../engine/combat";
+import {
+  COMBAT_DICE,
+  type CombatDieId,
+  type CombatRole,
+} from "../engine/combat";
+import { CombatDieVisual } from "../components/CombatDieVisual";
+import { FaceInfoOverlay } from "../components/FaceInfoOverlay";
 import {
   getVisibleCraftingRecipes,
   isCraftingRecipeCraftable,
@@ -20,7 +26,6 @@ import {
 import {
   combatFaceMark,
   combatFaceText,
-  combatRoleIcon,
 } from "../ui/combatDie";
 import { formatCost, formatMissingCost } from "../ui/formatCost";
 
@@ -92,6 +97,10 @@ export function CraftingPage({
   const [selectedRecipeId, setSelectedRecipeId] = useState(
     "combat:trainingSword",
   );
+  const [faceInfo, setFaceInfo] = useState<{
+    dieId: CombatDieId;
+    faceIndex: number;
+  } | null>(null);
   const detailRef = useRef<HTMLElement>(null);
   const unlocks = {
     forestTrophy,
@@ -202,7 +211,8 @@ export function CraftingPage({
   }
 
   return (
-    <div className="destination-page destination-page--crafting">
+    <>
+      <div className="destination-page destination-page--crafting">
       <header className="destination-header crafting-page-header">
         <div>
           <span className="eyebrow">Workshop</span>
@@ -344,16 +354,21 @@ export function CraftingPage({
                       onClick={() => selectRecipe(recipe.id)}
                       type="button"
                     >
-                      <span
-                        aria-hidden="true"
-                        className={`crafting-recipe-card__icon crafting-recipe-card__icon--${recipe.category}`}
-                      >
-                        {recipe.category === "combat"
-                          ? combatRoleIcon(recipe.role)
-                          : recipe.skill === "woodcutting"
-                            ? "W"
-                            : "M"}
-                      </span>
+                      {recipe.category === "combat" ? (
+                        <CombatDieVisual
+                          active={selected}
+                          decorative
+                          definition={COMBAT_DICE[recipe.itemId]}
+                          size="small"
+                        />
+                      ) : (
+                        <span
+                          aria-hidden="true"
+                          className="crafting-recipe-card__icon crafting-recipe-card__icon--skill"
+                        >
+                          {recipe.skill === "woodcutting" ? "W" : "M"}
+                        </span>
+                      )}
                       <span className="crafting-recipe-card__copy">
                         <span>
                           {recipeMeta(recipe)} · Tier {recipe.tier}
@@ -410,14 +425,22 @@ export function CraftingPage({
                 <div className="crafting-face-grid" aria-label={`${selectedRecipe.name} faces`}>
                   {selectedRecipe.category === "combat"
                     ? COMBAT_DICE[selectedRecipe.itemId].faces.map((face, index) => (
-                        <span
+                        <button
+                          aria-label={`Open information for face ${index + 1}: ${combatFaceText(face)}`}
                           className={`crafting-face crafting-face--${face.type}`}
                           key={`${selectedRecipe.id}-face-${index + 1}`}
+                          onClick={() =>
+                            setFaceInfo({
+                              dieId: selectedRecipe.itemId,
+                              faceIndex: index,
+                            })
+                          }
                           title={combatFaceText(face)}
+                          type="button"
                         >
                           <small>{index + 1}</small>
                           <strong>{combatFaceMark(face)}</strong>
-                        </span>
+                        </button>
                       ))
                     : getGatheringDieFaces({
                         id: "crafting-preview",
@@ -479,7 +502,16 @@ export function CraftingPage({
             )}
           </aside>
         </div>
-      </section>
-    </div>
+        </section>
+      </div>
+      {faceInfo ? (
+        <FaceInfoOverlay
+          definition={COMBAT_DICE[faceInfo.dieId]}
+          initialFaceIndex={faceInfo.faceIndex}
+          key={`${faceInfo.dieId}-${faceInfo.faceIndex}`}
+          onClose={() => setFaceInfo(null)}
+        />
+      ) : null}
+    </>
   );
 }
