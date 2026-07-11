@@ -17,10 +17,13 @@ Dette er den løbende implementeringslog for greenfield-versionen i denne mappe.
 - Mobilvisningen bruger én vertikal scrollbar og et kompakt sticky detail-/købspanel i stedet for separat canvas-scroll og et 360px detailområde.
 - Dice Rack er gjort mere minimalistisk med normal overlay-højde, auto-fit inventory-grid og én stabil scroll-container.
 - Woodcutting/Mining-specifik illustration og tunge node-animationer er parkeret til et senere polish-pass.
+- Stemningsnavne som “Hone face”, “Steady swing” og “Deep rhythm” er fjernet fra upgrades. Hvert nodekort viser nu den præcise effekt og før/efter-værdi.
+- Det mobile sticky købspanel er reduceret til én centreret række med effekt til venstre og `Buy · X XP` til højre.
 
 ### Verificeret
 
 - iPhone-lignende viewport på 390×844 viser både Skill Tree og Dice Rack uden klippede nodes, tomme canvasområder eller horisontalt side-overflow.
+- Browsermåling bekræfter, at Buy-knappen ligger inden for panelet og er vertikalt centreret.
 - Production-build og hele suiten består fortsat: 7 testfiler / 54 tests.
 
 ## 2026-07-11 — Dice Rack & visuelle Skill Trees

@@ -150,34 +150,34 @@ export function SkillTreeOverlay({
     if (!selectedCanAfford && selectedNode.cost !== undefined) {
       return `Need ${selectedNode.cost - progression.spendableXp} more XP`;
     }
-    return `Buy for ${selectedNode.cost} XP`;
+    return `Buy · ${selectedNode.cost} XP`;
   })();
   const tracks = [
     {
       id: "starter",
       eyebrow: "Blueprint",
-      title: "Starter die",
+      title: "Face upgrades",
       description: "Improve the six faces shared by every starter die.",
       nodes: nodes.filter((node) => node.id.startsWith("starter-face-")),
     },
     {
       id: "speed",
       eyebrow: "Automation",
-      title: "Roll rhythm",
+      title: "Roll speed",
       description: "Shorten the time between automatic rolls.",
       nodes: nodes.filter((node) => node.id.startsWith("speed-")),
     },
     {
       id: "slots",
       eyebrow: "Capacity",
-      title: "Crew slots",
+      title: "Dice slots",
       description: "Add more physical dice to the active loadout.",
       nodes: nodes.filter((node) => node.id.startsWith("slot-")),
     },
     {
       id: "specialist",
       eyebrow: "Tier 2",
-      title: skill === "woodcutting" ? "Oak specialist" : "Copper specialist",
+      title: "Specialist blueprint",
       description: "Earn the blueprint in combat, then improve its faces.",
       nodes: nodes.filter(
         (node) =>
@@ -201,13 +201,6 @@ export function SkillTreeOverlay({
       </div>
       <div className="skill-tree-minimal__body">
         <main className="skill-tree-minimal__tracks">
-          <div className="skill-tree-minimal__intro">
-            <span aria-hidden="true">✓</span>
-            <div>
-              <strong>{skill === "woodcutting" ? "First camp" : "First lantern"}</strong>
-              <small>Your engine is established. Choose the next path to improve.</small>
-            </div>
-          </div>
           <div className="skill-tree-minimal__grid">
             {tracks.map((track) => (
               <section className="upgrade-track" key={track.id}>

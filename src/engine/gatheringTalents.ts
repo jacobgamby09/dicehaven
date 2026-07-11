@@ -1,5 +1,6 @@
 import {
   getGatheringDieName,
+  getNextGatheringFaceUpgrade,
   getStarterGatheringDieKind,
   getTierTwoGatheringRecipe,
   type GatheringDieKind,
@@ -12,6 +13,7 @@ import {
   GATHERING_SLOT_COSTS,
   TIER_TWO_GATHERING_FACE_UPGRADE_COSTS,
 } from "./progression";
+import { RESOURCE_LABELS } from "./resources";
 
 export type GatheringTalentEffect =
   | { type: "root" }
@@ -64,7 +66,6 @@ const SPECIALIST_POSITIONS = [
 ] as const;
 
 function createFaceNodes(
-  skill: GatheringSkillId,
   dieKind: GatheringDieKind,
   prefix: "starter" | "specialist",
 ): GatheringTalentNode[] {
@@ -74,18 +75,22 @@ function createFaceNodes(
     ? TIER_TWO_GATHERING_FACE_UPGRADE_COSTS
     : GATHERING_FACE_UPGRADE_COSTS;
   const dieName = getGatheringDieName(dieKind);
-  const action = skill === "woodcutting" ? "Sharpen" : "Hone";
 
   return positions.map((position, index) => {
     const rank = index + 1;
     const id = `${prefix}-face-${rank}`;
+    const preview = getNextGatheringFaceUpgrade({
+      id: `${id}-preview`,
+      kind: dieKind,
+      upgradeLevel: index,
+    });
     return {
       id,
-      label: isSpecialist
-        ? `${dieName} face ${rank}`
-        : `${action} face ${rank}`,
-      description: `Permanently improves the next face on every ${dieName}.`,
-      icon: `${rank}`,
+      label: preview
+        ? `Face ${preview.faceIndex + 1}: ${preview.before} → ${preview.after} ${RESOURCE_LABELS[preview.resource]}`
+        : `Improve ${dieName} face`,
+      description: `Applies this face improvement to every ${dieName} you own now or later.`,
+      icon: `${(preview?.faceIndex ?? index) + 1}`,
       x: position.x,
       y: position.y,
       size: rank === 6 ? "large" : "small",
@@ -102,19 +107,14 @@ function createFaceNodes(
   });
 }
 
-function createSpeedNodes(skill: GatheringSkillId): GatheringTalentNode[] {
-  const labels =
-    skill === "woodcutting"
-      ? ["Find the rhythm", "Quick hands", "Seasoned crew", "Forest cadence"]
-      : ["Steady swing", "Quick hands", "Deep rhythm", "Miner's cadence"];
-
+function createSpeedNodes(): GatheringTalentNode[] {
   return SPEED_POSITIONS.map((position, index) => {
     const rank = index + 1;
     const before = GATHERING_ROLL_INTERVALS_MS[index] / 1_000;
     const after = GATHERING_ROLL_INTERVALS_MS[index + 1] / 1_000;
     return {
       id: `speed-${rank}`,
-      label: labels[index],
+      label: `Roll interval: ${before.toFixed(1)}s → ${after.toFixed(1)}s`,
       description: `Shortens every roll from ${before.toFixed(1)}s to ${after.toFixed(1)}s.`,
       icon: "↻",
       x: position.x,
@@ -127,17 +127,12 @@ function createSpeedNodes(skill: GatheringSkillId): GatheringTalentNode[] {
   });
 }
 
-function createSlotNodes(skill: GatheringSkillId): GatheringTalentNode[] {
-  const names =
-    skill === "woodcutting"
-      ? ["Second lumberjack", "Full logging crew"]
-      : ["Second miner", "Full mining crew"];
-
+function createSlotNodes(): GatheringTalentNode[] {
   return SLOT_POSITIONS.map((position, index) => {
     const slots = (index + 2) as 2 | 3;
     return {
       id: `slot-${slots}`,
-      label: names[index],
+      label: `Unlock dice slot ${slots}`,
       description: `Unlocks dice slot ${slots} and grants a new starter die.`,
       icon: `+${slots}`,
       x: position.x,
@@ -156,8 +151,6 @@ export function getGatheringTalentNodes(
   const starterKind = getStarterGatheringDieKind(skill);
   const specialistKind = getTierTwoGatheringRecipe(skill).kind;
   const rootLabel = skill === "woodcutting" ? "First camp" : "First lantern";
-  const blueprintLabel =
-    skill === "woodcutting" ? "Oak Trail" : "Copper Vein";
 
   return [
     {
@@ -171,12 +164,12 @@ export function getGatheringTalentNodes(
       prerequisiteIds: [],
       effect: { type: "root" },
     },
-    ...createFaceNodes(skill, starterKind, "starter"),
-    ...createSpeedNodes(skill),
-    ...createSlotNodes(skill),
+    ...createFaceNodes(starterKind, "starter"),
+    ...createSpeedNodes(),
+    ...createSlotNodes(),
     {
       id: "specialist-blueprint",
-      label: blueprintLabel,
+      label: `Unlock ${getGatheringDieName(specialistKind)} blueprint`,
       description: `Defeat the Forest Brute to earn the ${getGatheringDieName(specialistKind)} blueprint.`,
       icon: "✦",
       x: 885,
@@ -185,6 +178,6 @@ export function getGatheringTalentNodes(
       prerequisiteIds: ["skill-root"],
       effect: { type: "blueprint" },
     },
-    ...createFaceNodes(skill, specialistKind, "specialist"),
+    ...createFaceNodes(specialistKind, "specialist"),
   ];
 }

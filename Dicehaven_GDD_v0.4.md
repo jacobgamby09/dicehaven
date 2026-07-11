@@ -186,7 +186,7 @@ Første version har **20 synlige nodes pr. gathering-skill**:
 
 Alle senere nodes er synlige som aspiration, men kun den næste node på en gren kan købes. Tidlige nodes ligger tæt og billigt; afstanden og priserne vokser frem mod speed-, slot- og Tier 2-milestones. Skill Trees åbnes fra skill-headeren ved siden af **Make Active** og viser altid disponibel skill-XP.
 
-Første visuelle pass er bevidst minimalistisk: nodes vises i fire stabile spor — starter-blueprint, roll rhythm, crew slots og Tier 2-specialist — med kompakte kort og tydelige states. Mobil bruger ét vertikalt scroll-flow og et kompakt sticky købspanel. Mere illustrerede Woodcutting/Mining-metaforer parkeres, indtil informationshierarki, pacing og mobiladfærd er playtestet.
+Første visuelle pass er bevidst minimalistisk: nodes vises i fire stabile spor — face upgrades, roll speed, dice slots og Tier 2-specialist — med kompakte kort og tydelige states. Upgrade-nodes bruger ikke stemningsnavne; labelen beskriver altid den konkrete effekt, eksempelvis `Face 4: 1 → 2 Stone`, `Roll interval: 3.6s → 3.2s` eller `Unlock dice slot 2`. Mobil bruger ét vertikalt scroll-flow og et kompakt sticky købspanel. Mere illustrerede Woodcutting/Mining-metaforer parkeres, indtil informationshierarki, pacing og mobiladfærd er playtestet.
 
 Senere mechanic-changing nodes som rerolls, crit harvest og specialiseringer udvider de eksisterende grene; de bliver ikke en separat valuta eller en konkurrerende menu.
 

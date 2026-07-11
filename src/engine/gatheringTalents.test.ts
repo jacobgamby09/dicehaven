@@ -20,4 +20,21 @@ describe("gathering talent trees", () => {
     expect(tierTwoFace?.prerequisiteIds).toEqual(["specialist-blueprint"]);
     expect(tierTwoFace?.cost).toBe(30);
   });
+
+  it("labels nodes with their concrete effect instead of upgrade names", () => {
+    const nodes = getGatheringTalentNodes("mining");
+
+    expect(nodes.find((node) => node.id === "starter-face-4")?.label).toBe(
+      "Face 4: 1 → 2 Stone",
+    );
+    expect(nodes.find((node) => node.id === "speed-1")?.label).toBe(
+      "Roll interval: 4.0s → 3.6s",
+    );
+    expect(nodes.find((node) => node.id === "slot-2")?.label).toBe(
+      "Unlock dice slot 2",
+    );
+    expect(
+      nodes.find((node) => node.id === "specialist-blueprint")?.label,
+    ).toBe("Unlock Copper Prospector blueprint");
+  });
 });
