@@ -34,7 +34,6 @@ export function useCombatClock(): CombatClock {
   const frameRef = useRef<number | null>(null);
   const settleTimerRef = useRef<number | null>(null);
   const idleTimerRef = useRef<number | null>(null);
-  const isResolvingRef = useRef(false);
 
   const clearPhaseTimers = useCallback(() => {
     if (settleTimerRef.current !== null) {
@@ -47,12 +46,10 @@ export function useCombatClock(): CombatClock {
 
   const triggerCombatRoll = useCallback(() => {
     clearPhaseTimers();
-    isResolvingRef.current = true;
+    performCombatRoll();
     setPhase("rolling");
     settleTimerRef.current = window.setTimeout(
       () => {
-        performCombatRoll();
-        isResolvingRef.current = false;
         setPhase("settled");
       },
       ROLL_ANIMATION_MS,
@@ -69,7 +66,6 @@ export function useCombatClock(): CombatClock {
     setPlayerProgress(0);
     setEnemyProgress(0);
     setPhase("idle");
-    isResolvingRef.current = false;
     clearPhaseTimers();
   }, [clearPhaseTimers, encounterKey]);
 
@@ -86,10 +82,7 @@ export function useCombatClock(): CombatClock {
       playerElapsedRef.current += elapsed;
       enemyElapsedRef.current += elapsed;
 
-      if (
-        playerElapsedRef.current >= COMBAT_ROLL_INTERVAL_MS &&
-        !isResolvingRef.current
-      ) {
+      if (playerElapsedRef.current >= COMBAT_ROLL_INTERVAL_MS) {
         playerElapsedRef.current %= COMBAT_ROLL_INTERVAL_MS;
         triggerCombatRoll();
       }
@@ -105,10 +98,7 @@ export function useCombatClock(): CombatClock {
         return;
       }
 
-      if (
-        enemyElapsedRef.current >= enemyIntervalMs &&
-        !isResolvingRef.current
-      ) {
+      if (enemyElapsedRef.current >= enemyIntervalMs) {
         enemyElapsedRef.current %= enemyIntervalMs;
         performEnemyAttack();
       }

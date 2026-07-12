@@ -6,6 +6,7 @@ import {
   COMBAT_ENEMIES,
   createEmptyCombatInventory,
   FOREST_BRUTE,
+  PLAYER_BLOCK_CAP,
   PLAYER_MAX_HP,
   resolveCombatLoot,
   resolveCombatRoll,
@@ -178,11 +179,13 @@ interface GameState {
   purchaseFrontierForge: () => void;
   craftCombatDie: (dieId: CombatDieId) => void;
   equipCombatDie: (dieId: CombatDieId) => void;
+  setCombatSlot: (slotIndex: number, dieId: CombatDieId | null) => void;
   unequipCombatSlot: (slotIndex: number) => void;
   startCombat: (zoneId?: CombatZoneId) => void;
   performCombatRoll: () => void;
   performEnemyAttack: () => void;
   retreatFromCombat: () => void;
+  clearCombatResult: () => void;
   togglePause: () => void;
   resetGame: () => void;
 }
@@ -846,6 +849,32 @@ export const useGameStore = create<GameState>()(
           return { combat: { ...state.combat, loadout } };
         });
       },
+      setCombatSlot: (slotIndex, dieId) => {
+        set((state) => {
+          if (
+            state.combat.session !== null ||
+            slotIndex < 0 ||
+            slotIndex >= state.combat.loadout.length
+          ) {
+            return state;
+          }
+
+          const loadout = [...state.combat.loadout];
+          loadout[slotIndex] = dieId;
+
+          if (dieId !== null) {
+            const combatLevel = getLevelProgress(state.combat.lifetimeXp).level;
+            if (
+              COMBAT_DICE[dieId].levelRequirement > combatLevel ||
+              countEquippedDice(loadout, dieId) > state.combat.inventory[dieId]
+            ) {
+              return state;
+            }
+          }
+
+          return { combat: { ...state.combat, loadout } };
+        });
+      },
       unequipCombatSlot: (slotIndex) => {
         set((state) => {
           if (
@@ -945,7 +974,10 @@ export const useGameStore = create<GameState>()(
           const outcome = resolveCombatRoll(state.seed, rollCount, dice);
           const enemy = COMBAT_ENEMIES[session.enemyId];
           const enemyHp = Math.max(0, session.enemyHp - outcome.event.damage);
-          const block = session.block + outcome.event.block;
+          const block = Math.min(
+            PLAYER_BLOCK_CAP,
+            session.block + outcome.event.block,
+          );
           const scouted = session.scouted || outcome.event.light > 0;
 
           if (enemyHp > 0) {
@@ -1044,19 +1076,8 @@ export const useGameStore = create<GameState>()(
             };
           }
 
-          const bossIsNext =
-            session.zoneId === "forestEdge" &&
-            zoneProgress >= 20 &&
-            !state.combat.forestTrophy;
-          const nextSelection =
-            session.zoneId === "wolfDen"
-              ? selectWolfDenEnemy(loot.nextSeed)
-              : bossIsNext
-                ? { enemy: FOREST_BRUTE, nextSeed: loot.nextSeed }
-                : selectForestEdgeEnemy(loot.nextSeed);
-
           return {
-            seed: nextSelection.nextSeed,
+            seed: loot.nextSeed,
             resources: {
               ...state.resources,
               monsterParts: state.resources.monsterParts + loot.monsterParts,
@@ -1068,21 +1089,21 @@ export const useGameStore = create<GameState>()(
               zoneProgress,
               wolfDenProgress,
               rollCount,
-              session: {
-                ...session,
-                encounterId: session.encounterId + 1,
-                enemyId: nextSelection.enemy.id,
-                enemyHp: nextSelection.enemy.maxHp,
-                block: 0,
-                scouted: false,
-                lastEnemyAttack: null,
-                enemiesDefeated: runEnemiesDefeated,
+              session: null,
+              lastRoll: outcome.event,
+              lastResult: {
+                type: "victory",
+                zoneId: session.zoneId,
+                enemyName: enemy.name,
                 xpGained: runXpGained,
                 monsterPartsGained: runMonsterPartsGained,
+                enemiesDefeated: runEnemiesDefeated,
+                trophyGained: false,
                 diceGained: runDiceGained,
                 lootRolls: runLootRolls,
+                defeatReason: null,
+                unlocksGained: [],
               },
-              lastRoll: outcome.event,
               lastKill: {
                 id: rollCount,
                 zoneId: session.zoneId,
@@ -1145,7 +1166,7 @@ export const useGameStore = create<GameState>()(
               session: {
                 ...session,
                 playerHp: attack.playerHp,
-                block: 0,
+                block: attack.blockRemaining,
                 lastEnemyAttack: {
                   id: enemyAttackCount,
                   damageTaken: attack.damageTaken,
@@ -1184,6 +1205,11 @@ export const useGameStore = create<GameState>()(
             },
           };
         });
+      },
+      clearCombatResult: () => {
+        set((state) => ({
+          combat: { ...state.combat, lastResult: null, lastKill: null },
+        }));
       },
       togglePause: () => set((state) => ({ isPaused: !state.isPaused })),
       resetGame: () =>

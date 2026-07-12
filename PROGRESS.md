@@ -8,6 +8,33 @@ Dette er den løbende implementeringslog for greenfield-versionen i denne mappe.
 - **M1 — Combat vertical slice:** Spilbar end-to-end gennem Forest Brute, Tier 2 crafting, Frontier Forge og første Wolf Den-encounter. Næste checkpoint er bruger-playtest og lyd/juice baseret på den faktiske oplevelse.
 - **M2+ — Skill Tree-mekanikker, sustain og dybere settlement:** Ikke påbegyndt.
 
+## 2026-07-12 — Combat 2.0: fuld automation & simplificeret flow
+
+### Tilføjet
+
+- Combat bruger nu to uafhængige real-time clocks: én Player Roll Speed og én Enemy Attack Speed. Hele player-loadoutet ruller samlet hvert 4,0 sekund; fjender beholder deres individuelle 4,5–7,0 sekunders angrebsrytme.
+- Player-roll resolves først ved præcis samtidighed. Animationerne visualiserer events uden at pause den modsatte clock.
+- Block bevarer ubrugt værdi efter et angreb og har et cap lig Player Max HP (`10`).
+- Alle fjender har et navngivet og synligt næste angreb med Damage, speed og progressbar.
+- Ny fire-state combat-rejse: **Prepare/Combat Hub → Fighting → Victory/Defeat → Fight again eller justér loadout**.
+- Victory viser Combat XP, Monster Parts, antal loot-rolls, dice drops og en særskilt Scouted-bonus. Defeat giver konkret loadout-råd uden progressionstab.
+- Combat fortsætter, når spilleren navigerer til andre tabs, mens appen er åben. Refresh giver ingen offline catch-up.
+
+### Ændret
+
+- Et encounter afsluttes nu efter én fjende. Næste fight startes eksplicit med `Fight again`, så rewards og årsag/virkning altid kan aflæses.
+- Combat Hub viser kun zonevalg, encounter-preview, nuværende loadout og start-handlingen. Crafting forbliver i den dedikerede Crafting-tab.
+- Combat Arsenal bruger owned dice som primær flade. Valg af en die viser faces og direkte `Equip here` / `Replace` / `Unequip` på hver slot; loadoutet er read-only under aktiv kamp.
+- Fighting-UI prioriterer fjendens HP/intention, de to speed-bars, Player HP/Block og selve Combat Dice-rullet.
+- Forest Brute bliver det næste eksplicitte Forest Edge-encounter efter 20 victories i stedet for at kædes automatisk ind i samme run.
+
+### Verificeret
+
+- Combat-simulationen dækker hurtigere/langsommere enemy clocks, player-first ties, persistent Block, Block Cap, Scouted-loot, retreat samt Victory/Defeat-stop.
+- Browser-flow verificeret fra Combat Hub gennem direkte Arsenal-slot-replacement, automatisk kamp og Victory-state.
+- Responsiv QA ved 390 px viser Hub og Fighting uden horisontalt overflow; aktiv kamp låser alle Arsenal-slots.
+- Production-build og hele testsuiten består: 9 testfiler / 69 tests.
+
 ## 2026-07-11 — Combat Dice-identitet & Face Info
 
 ### Tilføjet

@@ -33,9 +33,19 @@ describe("combat engine", () => {
 
   it("uses stored block on the next enemy attack", () => {
     expect(resolveEnemyAttack(10, 1, 3)).toEqual({
+      blockRemaining: 0,
       blockUsed: 1,
       damageTaken: 2,
       playerHp: 8,
+    });
+  });
+
+  it("keeps unspent Block after a smaller enemy attack", () => {
+    expect(resolveEnemyAttack(10, 5, 3)).toEqual({
+      blockRemaining: 2,
+      blockUsed: 3,
+      damageTaken: 0,
+      playerHp: 10,
     });
   });
 

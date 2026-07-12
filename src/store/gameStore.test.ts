@@ -343,6 +343,29 @@ describe("game store", () => {
     expect(useGameStore.getState().combat.loadout).toEqual([null, null, null]);
   });
 
+  it("assigns a selected Combat Die directly to a loadout slot", () => {
+    useGameStore.setState({
+      buildings: { ...useGameStore.getState().buildings, workshop: true },
+      combat: {
+        ...useGameStore.getState().combat,
+        lifetimeXp: 1_000,
+        inventory: {
+          ...useGameStore.getState().combat.inventory,
+          trainingSword: 1,
+          copperLongsword: 1,
+        },
+        loadout: ["trainingSword", null, null],
+      },
+    });
+
+    useGameStore.getState().setCombatSlot(0, "copperLongsword");
+    expect(useGameStore.getState().combat.loadout[0]).toBe("copperLongsword");
+
+    useGameStore.getState().startCombat();
+    useGameStore.getState().setCombatSlot(0, null);
+    expect(useGameStore.getState().combat.loadout[0]).toBe("copperLongsword");
+  });
+
   it("pauses gathering rolls while Combat is active", () => {
     useGameStore.setState({
       buildings: { ...useGameStore.getState().buildings, workshop: true },
@@ -384,8 +407,8 @@ describe("game store", () => {
     }
 
     const state = useGameStore.getState();
-    expect(state.combat.session).not.toBeNull();
-    expect(state.combat.session?.encounterId).toBe(2);
+    expect(state.combat.session).toBeNull();
+    expect(state.combat.lastResult?.type).toBe("victory");
     expect(state.combat.lifetimeXp).toBeGreaterThanOrEqual(5);
     expect(state.combat.zoneProgress).toBe(1);
     expect(state.resources.monsterParts).toBeGreaterThanOrEqual(1);
@@ -417,6 +440,46 @@ describe("game store", () => {
     expect(state.combat.lastResult?.type).toBe("defeat");
     expect(state.combat.lastResult?.defeatReason).toBe("noBlock");
     expect(state.activeSkill).toBe("mining");
+  });
+
+  it("keeps leftover Block and caps stored Block at Max HP", () => {
+    useGameStore.setState({
+      buildings: { ...useGameStore.getState().buildings, workshop: true },
+      combat: {
+        ...useGameStore.getState().combat,
+        inventory: {
+          ...useGameStore.getState().combat.inventory,
+          trainingSword: 1,
+          woodenShield: 1,
+        },
+        loadout: ["trainingSword", "woodenShield", null],
+      },
+    });
+    useGameStore.getState().startCombat();
+    useGameStore.setState((state) => ({
+      combat: {
+        ...state.combat,
+        session: state.combat.session
+          ? { ...state.combat.session, block: 10, enemyHp: 100 }
+          : null,
+      },
+    }));
+
+    useGameStore.getState().performCombatRoll();
+    expect(useGameStore.getState().combat.session?.block).toBe(10);
+
+    useGameStore.setState((state) => ({
+      combat: {
+        ...state.combat,
+        session: state.combat.session
+          ? { ...state.combat.session, block: 5 }
+          : null,
+      },
+    }));
+    useGameStore.getState().performEnemyAttack();
+
+    expect(useGameStore.getState().combat.session?.block).toBe(3);
+    expect(useGameStore.getState().combat.session?.playerHp).toBe(10);
   });
 
   it("spawns Forest Brute at 20 progress and grants first-clear rewards", () => {
@@ -464,7 +527,7 @@ describe("game store", () => {
     ]);
   });
 
-  it("moves directly from the twentieth regular kill into the boss encounter", () => {
+  it("reveals the boss after the twentieth regular victory", () => {
     useGameStore.setState({
       buildings: { ...useGameStore.getState().buildings, workshop: true },
       combat: {
@@ -495,8 +558,10 @@ describe("game store", () => {
 
     const state = useGameStore.getState();
     expect(state.combat.zoneProgress).toBe(20);
-    expect(state.combat.session?.enemyId).toBe("forestBrute");
-    expect(state.combat.session?.encounterId).toBe(2);
+    expect(state.combat.session).toBeNull();
+
+    useGameStore.getState().startCombat();
+    expect(useGameStore.getState().combat.session?.enemyId).toBe("forestBrute");
   });
 
   it("builds Barracks after the boss and adds a fourth combat slot", () => {
@@ -605,7 +670,8 @@ describe("game store", () => {
 
     expect(useGameStore.getState().combat.wolfDenProgress).toBe(1);
     expect(useGameStore.getState().combat.zoneProgress).toBe(0);
-    expect(useGameStore.getState().combat.session?.zoneId).toBe("wolfDen");
+    expect(useGameStore.getState().combat.session).toBeNull();
+    expect(useGameStore.getState().combat.lastResult?.type).toBe("victory");
   });
 
   it("completes the path from a fresh state through Forge and Wolf Den", () => {
@@ -669,6 +735,10 @@ describe("game store", () => {
 
     for (let encounter = 0; encounter < 25; encounter += 1) {
       if (useGameStore.getState().combat.forestTrophy) break;
+
+      if (useGameStore.getState().combat.session === null) {
+        useGameStore.getState().startCombat();
+      }
 
       const session = useGameStore.getState().combat.session;
       expect(session).not.toBeNull();

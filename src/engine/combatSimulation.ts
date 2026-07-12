@@ -1,5 +1,6 @@
 import {
   COMBAT_ROLL_INTERVAL_MS,
+  PLAYER_BLOCK_CAP,
   PLAYER_MAX_HP,
   resolveCombatRoll,
   resolveEnemyAttack,
@@ -50,7 +51,7 @@ export function simulateCombatEncounter(
       const outcome = resolveCombatRoll(nextSeed, rolls, dice);
       nextSeed = outcome.nextSeed;
       enemyHp = Math.max(0, enemyHp - outcome.event.damage);
-      block += outcome.event.block;
+      block = Math.min(PLAYER_BLOCK_CAP, block + outcome.event.block);
 
       if (enemyHp <= 0) {
         return {
@@ -71,7 +72,7 @@ export function simulateCombatEncounter(
     enemyAttacks += 1;
     const attack = resolveEnemyAttack(playerHp, block, enemy.attack);
     playerHp = attack.playerHp;
-    block = 0;
+    block = attack.blockRemaining;
 
     if (playerHp <= 0) {
       return {

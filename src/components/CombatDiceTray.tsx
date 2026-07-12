@@ -6,16 +6,26 @@ import { CombatDie } from "./CombatDie";
 import { FaceInfoOverlay } from "./FaceInfoOverlay";
 
 interface CombatDiceTrayProps {
+  block: number;
+  blockCap: number;
   event: CombatRollEvent | null;
+  intervalMs: number;
   loadout: readonly (CombatDieId | null)[];
   phase: RollPhase;
+  playerHp: number;
+  playerMaxHp: number;
   progress: number;
 }
 
 export function CombatDiceTray({
+  block,
+  blockCap,
   event,
+  intervalMs,
   loadout,
   phase,
+  playerHp,
+  playerMaxHp,
   progress,
 }: CombatDiceTrayProps): React.JSX.Element {
   const reduceMotion = useReducedMotion();
@@ -32,16 +42,23 @@ export function CombatDiceTray({
       <section aria-labelledby="combat-dice-title" className="combat-dice-tray">
       <header>
         <div>
-          <span className="eyebrow">Active loadout</span>
-          <h2 id="combat-dice-title">Combat roll</h2>
+          <span className="eyebrow">Your crew</span>
+          <h2 id="combat-dice-title">Automatic roll</h2>
         </div>
-        <strong>{equippedDice.length} dice</strong>
+        <div className="combat-v2-player-stats">
+          <span><strong>{playerHp} / {playerMaxHp}</strong> HP</span>
+          <span className={block > 0 ? "is-active" : ""}>
+            <strong>{block} / {blockCap}</strong> Block
+          </span>
+        </div>
       </header>
+
+      <progress aria-label="Player health" className="combat-v2-player-health" max={playerMaxHp} value={playerHp} />
 
       <div className="combat-roll-meter">
         <div>
-          <span>{phase === "rolling" ? "Rolling…" : "Next combat roll"}</span>
-          <span>4.0s</span>
+          <span>{phase === "rolling" ? "Rolling…" : "Next player roll"}</span>
+          <span>{(intervalMs / 1_000).toFixed(1)}s speed</span>
         </div>
         <progress aria-label="Time until next combat roll" max={1} value={progress} />
       </div>

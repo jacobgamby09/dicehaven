@@ -25,6 +25,7 @@ Sprogregel: GDD'en er på dansk (arbejdssprog). **Al spiller-vendt tekst i spill
 *Revision 2026-07-11 (6): Dice Rack bruger inventoryet som primær loadout-flade. Valg af en fysisk terning viser straks equip/unequip eller et eksplicit valg af den slot, der skal erstattes; den dobbelte Active Dice Pool-oversigt er fjernet (§12).*
 *Revision 2026-07-11 (7): Al fysisk dice-crafting er samlet i en dedikeret Crafting-side med Combat Dice/Skill Dice-tabs. Workshop åbner systemet; recipes bag manglende bygninger eller undiscovered blueprints skjules, mens Settlement forklarer de kommende unlocks (§10.1, §12).*
 *Revision 2026-07-11 (8): Combat Dice har et fælles, datadrevet visuelt sprog, hvor rolle styrer farve/motion, materiale styrer overflade, og tier/rarity styrer ramme og effektintensitet. Klikbare faces åbner én fælles regel-forklaring i Crafting, Arsenal og efter combat-landing (§11.5, §12).*
+*Revision 2026-07-12: Combat er fuldt automatisk real-time med uafhængig Player Roll Speed og Enemy Attack Speed. Ét encounter afsluttes i en eksplicit Victory/Defeat-state; Block bevarer restværdi op til Max HP, og Combat Hub/Arsenal er forenklet omkring preparation, observation og direkte slot-assignment (§11.1–§11.2, §12).*
 
 ---
 
@@ -254,15 +255,17 @@ Combat er en skill: at kæmpe betyder, at ingen gathering kører imens. Det er b
 
 ## 11.1 Zone Combat (eneste mode i M1)
 
-Spilleren vælger en zone. Fjender spawner én ad gangen fra zonens pool. Combat-terningerne ruller på skillens interval; fjenden angriber på sit eget faste interval. Kills fylder zone-baren; fuld bar → boss.
+Spilleren vælger en zone og starter ét encounter mod en fjende fra zonens pool. Combat-terningerne ruller automatisk på spillerens eget interval, mens fjenden angriber automatisk på sit eget faste interval. De to clocks er uafhængige. Efter Victory vælger spilleren `Fight again`, loadout-ændring eller en anden zone. Kills fylder zone-baren; fuld bar → boss.
 
 ## 11.2 Tick-resolution (den konkrete kontrakt)
 
-1. Combat dice ruller hvert `rollInterval` (4,0s basis — samme motor).
+1. Combat dice ruller samlet hvert `rollInterval` (4,0s basis). Flere udstyrede dice gør ikke intervallet langsommere.
 2. **Damage**-resultater trækker fra fjendens HP. **Block** lægges i en pulje, der absorberer fjendens næste angreb. **Heal** genopretter spillerens HP. **Utility** påvirker loot/progress.
-3. Fjenden angriber hvert `attackInterval` (typisk 3,5-5s, telegraferet med en lille bar): skade = fjendens attack − akkumuleret block (min 0); block-puljen nulstilles efter angrebet.
-4. Fjende død → loot (monster parts m.m.) + Combat XP + zone-progress; ny fjende spawner.
-5. Spiller-HP 0 → run slutter: **alt loot og XP beholdes**, boss-encounterens HP resetter, zone-fremgang består. Uden for combat er HP altid fuld (ingen ventetid, ingen hospital).
+3. Fjenden angriber hvert `attackInterval` (M1: 4,5–7,0s, altid telegraferet): skade = fjendens attack − tilgængelig Block (min 0). Kun den absorberede Block forbruges; resten bevares. Block cap = Player Max HP.
+4. Hvis begge clocks bliver færdige samtidigt, resolves player-roll først. Simulationen anvender resultatet ved clock-completion; roll-animationen er præsentation og pauser aldrig enemy-clockens reelle tid.
+5. Fjende død → loot (monster parts m.m.) + Combat XP + zone-progress → Victory-state. `Fight again` starter et nyt encounter med fuld Player HP og nul Block.
+6. Player HP 0 → Defeat-state. **Allerede optjent loot og XP beholdes**, zone-fremgang består, og der er ingen ventetid eller hospital.
+7. En aktiv kamp fortsætter ved navigation til andre tabs, så længe appen er åben; gathering er fortsat pauset. Refresh genoptager den gemte encounter-state med friske clocks og giver ingen offline catch-up.
 
 ## 11.3 Tuning-mål (sim ejer tallene)
 
@@ -320,8 +323,8 @@ Zoner er kurrikulum: hver zone tester én ting og unlocker svaret på den næste
 
 **Act 1: The Wilds** (kanonisk)
 
-* **Zone 1 — Forest Edge** (M1): Forest Wolf, Wild Boar, Bandit Scout. Boss: **Forest Brute** ved 20/20 permanente kills. Normale kills spawner straks næste fjende og giver loot/XP med det samme; spiller-HP bæres gennem runnet. Boss first-clear giver Forest Trophy + Brute Cleaver og annoncerer Oakheart Axe, Copper Prospector, Barracks og Frontier Forge som nye paths. Efter clear kan zonen patruljeres videre uden at genaktivere bossen automatisk.
-* **Zone 2 — Wolf Den preview** (M1 post-boss): Frontier Forge åbner et første kontinuerligt Dire Wolf-encounter med separat 0/10 survey-progress og chance for Level 6-dien **Dire Wolf Claw**. Dire Wolf er tunet som et T2-loadout-check: gammelt Forest-gear ca. 10,6% single-encounter win rate; Brute Cleaver + Copper Longsword + Oakguard Shield ca. 79%; et balanceret fire-slot Barracks-loadout overlever patrols stabilt. **Alpha Wolf**, hide/bone og sustain-presset kommer i M2.
+* **Zone 1 — Forest Edge** (M1): Forest Wolf, Wild Boar, Bandit Scout. Boss: **Forest Brute** ved 20/20 permanente kills. Hver Victory giver loot/XP og vender tilbage til et resultatkort med `Fight again`; bossen vælges automatisk som næste Forest Edge-encounter efter kill 20. Boss first-clear giver Forest Trophy + Brute Cleaver og annoncerer Oakheart Axe, Copper Prospector, Barracks og Frontier Forge som nye paths. Efter clear kan zonen patruljeres videre uden at genaktivere bossen automatisk.
+* **Zone 2 — Wolf Den preview** (M1 post-boss): Frontier Forge åbner Dire Wolf-encounters med separat 0/10 survey-progress og chance for Level 6-dien **Dire Wolf Claw**. Dire Wolf er tunet som et T2-loadout-check: gammelt Forest-gear ca. 10,6% single-encounter win rate; Brute Cleaver + Copper Longsword + Oakguard Shield ca. 79%; et balanceret fire-slot Barracks-loadout overlever encounters stabilt. **Alpha Wolf**, hide/bone og sustain-presset kommer i M2.
 
 **Act 2+ (kun skitse, designes når Act 1 er bevist):** The Quarry (armor-check, iron), The Marsh (status/potions, Research), Ancient Ruins (relics, Endless Dungeon). Endless Dungeon er sen-content — aldrig MVP.
 
@@ -339,9 +342,10 @@ Udvidelser pr. milestone:
 * **Skill Tree:** minimalistisk overlay med fire upgrade-spor, tydelige locked/reachable/ready/purchased-states og et detailpanel med før/efter, pris og krav. Ingen fast canvas eller todimensionel panorering i første stabile version.
 * **Roll Speed-HUD:** ligger som en integreret full-width kontrolrække i Dice Tray'ens lyse headersektion, direkte over filt-scenen. Den bruger en custom CSS-fill frem for browserens native progress-element, viser live countdown, pause/inactive-state og aktuelt interval, og står fuld under `Rolling…`, før næste cyklus begynder.
 * **XP-enheder:** XP-balancer må aldrig vises som nøgne tal. Skill Tree-headeren viser eksempelvis `264 XP`, også når den forklarende label skjules på mobil.
-* **Combat-skærm**: genbruger dice tray-komponenten; tilføjer fjende-kort (navn, HP-bar, attack-telegraf), spillerens HP-bar, zone-progress-bar, loadout-vælger og en kompakt "dps ind/ud"-linje (Risk 3-mitigering: man skal kunne SE, hvorfor man taber)
-* **Impact-kontrakt:** Damage, Block og Light anvendes mekanisk ved terningens visuelle landing — aldrig før. Enemy attacks venter, mens et player-roll er i luften; player-roll har prioritet ved præcis samtidighed.
-* **Kill-feedback:** normale kills viser en kort enemy-transition og loot-popup, mens næste encounter starter. Run-dashboardet viser akkumulerede kills, XP, Monster Parts og dice drops.
+* **Combat-flow:** én side har fire tydelige states: Prepare/Combat Hub, Fighting, Victory og Defeat. Hubben viser zone, konkret trussel, loadout og én tydelig startknap. Resultat-staten viser XP, Monster Parts, loot-rolls, dice drops og handlingerne `Fight again`, `Edit loadout` og `Choose another zone`.
+* **Fighting-state:** fjenden står øverst med HP, Scouted og navngivet næste angreb samt sin Attack Speed-bar. Player-panelet samler HP, Block/Block Cap, Roll Speed-bar og de fysiske Combat Dice. Kun `Inspect loadout` og `Retreat` er tilgængelige under kamp.
+* **Impact-kontrakt:** Player og enemy resolves ved deres egne clock-completions; player har prioritet ved præcis samtidighed. Animationer visualiserer den allerede deterministiske event og må ikke fryse den anden clock.
+* **Combat Arsenal:** fysisk inventory er den primære flade. Klik på en ejet die vælger den; detailpanelet viser faces og alle loadout-slots, som direkte kan equippe, unequippe eller erstatte. Slots er read-only, mens Combat er aktiv.
 * **Combat-die inspector:** alle seks faces, gennemsnit, source, ownership og level-gate skal kunne ses før equip. En tidligt droppet locked die vises som et kommende mål, ikke som skjult indhold.
 * **Combat Face Info:** alle Combat Dice-faces i Crafting og Arsenal er semantiske knapper. De åbner et desktop-dialog/mobil-bottom-sheet med face-nummer, konkret effekt, chance, resolution-timing, varighed, keyword og antal identiske resultater. Forrige/næste og direkte face-valg virker uden lukning; Escape, backdrop og close lukker med fokus-retur.
 * **Combat roll-identitet:** den fælles CombatDieVisual bruges i katalog, Arsenal og selve rullet. Bevægelige dice er ikke klikbare; efter landing kan resultatet åbne samme Face Info. Reduced-motion fjerner rotation, partikel- og overlay-animationer uden at fjerne information.
@@ -440,10 +444,8 @@ Bevidst ude — genbesøges tidligst efter M3, med arkiv-GDD'erne som kilde:
 
 # 18. Open Questions (de ægte)
 
-1. **Hvor aktiv skal boss-combat være?** Anbefaling: automatisk med loadout-valg; bosses får synlig telegraf og evt. ét aktivt valg (retreat-timing) — aldrig turbaseret. Afgøres i M1-playtest.
-2. **Skal fjendens angreb time-baseres eller rul-baseres?** Anbefaling: tidsbaseret (§11.2) — mere læseligt og roll-speed-uafhængigt. Verificeres i combat-simmen.
-3. **Hvornår d6 → d8?** To ekstra sider er en kæmpe milestone; foreslået som Act 2-belønning. Afgøres efter M2.
-4. **Passiv produktions loft** — 40-60% late game er udkastet; simmen afgør, hvor grænsen for "aktiv skal føles nødvendig" reelt går.
+1. **Hvornår d6 → d8?** To ekstra sider er en kæmpe milestone; foreslået som Act 2-belønning. Afgøres efter M2.
+2. **Passiv produktions loft** — 40-60% late game er udkastet; simmen afgør, hvor grænsen for "aktiv skal føles nødvendig" reelt går.
 
 ---
 

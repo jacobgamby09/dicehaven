@@ -95,6 +95,7 @@ export interface CombatLootOutcome {
 export interface CombatEnemyDefinition {
   id: CombatEnemyId;
   name: string;
+  attackName: string;
   isBoss: boolean;
   maxHp: number;
   attack: number;
@@ -107,6 +108,7 @@ export interface CombatEnemyDefinition {
 export interface EnemyAttackOutcome {
   damageTaken: number;
   blockUsed: number;
+  blockRemaining: number;
   playerHp: number;
 }
 
@@ -309,6 +311,7 @@ export const COMBAT_DICE: Readonly<Record<CombatDieId, CombatDieDefinition>> = {
 export const FOREST_WOLF: CombatEnemyDefinition = {
   id: "forestWolf",
   name: "Forest Wolf",
+  attackName: "Wolf Bite",
   isBoss: false,
   maxHp: 4,
   attack: 2,
@@ -328,6 +331,7 @@ export const FOREST_WOLF: CombatEnemyDefinition = {
 export const WILD_BOAR: CombatEnemyDefinition = {
   id: "wildBoar",
   name: "Wild Boar",
+  attackName: "Tusk Charge",
   isBoss: false,
   maxHp: 5,
   attack: 3,
@@ -349,6 +353,7 @@ export const WILD_BOAR: CombatEnemyDefinition = {
 export const BANDIT_SCOUT: CombatEnemyDefinition = {
   id: "banditScout",
   name: "Bandit Scout",
+  attackName: "Quick Strike",
   isBoss: false,
   maxHp: 4,
   attack: 2,
@@ -370,6 +375,7 @@ export const BANDIT_SCOUT: CombatEnemyDefinition = {
 export const FOREST_BRUTE: CombatEnemyDefinition = {
   id: "forestBrute",
   name: "Forest Brute",
+  attackName: "Crushing Blow",
   isBoss: true,
   maxHp: 34,
   attack: 3,
@@ -387,6 +393,7 @@ export const FOREST_BRUTE: CombatEnemyDefinition = {
 export const DIRE_WOLF: CombatEnemyDefinition = {
   id: "direWolf",
   name: "Dire Wolf",
+  attackName: "Savage Bite",
   isBoss: false,
   maxHp: 22,
   attack: 5,
@@ -426,6 +433,7 @@ export const FOREST_EDGE_ENEMY_IDS: readonly CombatEnemyId[] = [
 ];
 
 export const PLAYER_MAX_HP = 10;
+export const PLAYER_BLOCK_CAP = PLAYER_MAX_HP;
 export const COMBAT_ROLL_INTERVAL_MS = 4_000;
 
 export function createEmptyCombatInventory(): Record<CombatDieId, number> {
@@ -515,6 +523,7 @@ export function resolveEnemyAttack(
 
   return {
     blockUsed,
+    blockRemaining: safeBlock - blockUsed,
     damageTaken,
     playerHp: Math.max(0, playerHp - damageTaken),
   };

@@ -6,6 +6,8 @@ import {
   FOREST_BRUTE,
   FOREST_WOLF,
   WILD_BOAR,
+  type CombatDieDefinition,
+  type CombatEnemyDefinition,
 } from "./combat";
 import {
   simulateCombatEncounter,
@@ -13,12 +15,62 @@ import {
 } from "./combatSimulation";
 
 describe("combat balance simulation", () => {
+  const automaticDie: CombatDieDefinition = {
+    ...COMBAT_DICE.trainingSword,
+    faces: Array.from({ length: 6 }, () => ({
+      type: "damage" as const,
+      amount: 1,
+    })),
+  };
+
+  const automaticEnemy = (
+    attackIntervalMs: number,
+  ): CombatEnemyDefinition => ({
+    ...FOREST_WOLF,
+    attack: 0,
+    attackIntervalMs,
+    maxHp: 99,
+  });
+
   it("is deterministic for a fixed seed and matchup", () => {
     const loadout = [COMBAT_DICE.trainingSword, COMBAT_DICE.woodenShield];
 
     expect(simulateCombatEncounter(42, loadout, FOREST_WOLF)).toEqual(
       simulateCombatEncounter(42, loadout, FOREST_WOLF),
     );
+  });
+
+  it("lets independent player and enemy clocks resolve at their own speeds", () => {
+    const fastEnemy = simulateCombatEncounter(
+      1,
+      [automaticDie],
+      automaticEnemy(1_000),
+      8_000,
+    );
+    const slowEnemy = simulateCombatEncounter(
+      1,
+      [automaticDie],
+      automaticEnemy(10_000),
+      8_000,
+    );
+
+    expect(fastEnemy.rolls).toBe(2);
+    expect(fastEnemy.enemyAttacks).toBe(8);
+    expect(slowEnemy.rolls).toBe(2);
+    expect(slowEnemy.enemyAttacks).toBe(0);
+  });
+
+  it("resolves the player first when both clocks complete together", () => {
+    const lethalEnemy: CombatEnemyDefinition = {
+      ...automaticEnemy(4_000),
+      attack: 10,
+      maxHp: 1,
+    };
+    const result = simulateCombatEncounter(1, [automaticDie], lethalEnemy);
+
+    expect(result.victory).toBe(true);
+    expect(result.enemyAttacks).toBe(0);
+    expect(result.playerHp).toBe(10);
   });
 
   it("keeps the crafted Sword + Shield loadout viable in Forest Edge", () => {
