@@ -60,10 +60,8 @@ export function CombatDiceTray({
         actionLabel="Roll"
         ariaLabel="Player roll speed"
         intervalMs={intervalMs}
-        isResolving={phase === "rolling"}
         label="Roll speed"
         progress={progress}
-        resolvingLabel="Rolling…"
         tone="player"
       />
 

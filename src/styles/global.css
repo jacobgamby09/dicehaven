@@ -6059,9 +6059,11 @@ progress::-moz-progress-bar {
   border-radius: inherit;
   background: linear-gradient(90deg, var(--combat-speed-start), var(--combat-speed-end));
   box-shadow: 0 0 12px color-mix(in srgb, var(--combat-speed-end) 32%, transparent);
+  animation-name: combat-speed-fill;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform 80ms linear;
   will-change: transform;
 }
 
@@ -6102,8 +6104,13 @@ progress::-moz-progress-bar {
 
 @media (prefers-reduced-motion: reduce) {
   .combat-speed-bar__fill {
-    transition: none;
+    animation: none;
   }
+}
+
+@keyframes combat-speed-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 /* Combat 2.0: automatic dual-clock flow */

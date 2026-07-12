@@ -5,6 +5,7 @@ import type { RollPhase } from "./useRollClock";
 
 const ROLL_ANIMATION_MS = 520;
 const RESULT_HOLD_MS = 900;
+const VISUAL_UPDATE_MS = 100;
 
 export interface CombatClock {
   playerProgress: number;
@@ -34,6 +35,7 @@ export function useCombatClock(): CombatClock {
   const frameRef = useRef<number | null>(null);
   const settleTimerRef = useRef<number | null>(null);
   const idleTimerRef = useRef<number | null>(null);
+  const lastVisualUpdateRef = useRef(0);
 
   const clearPhaseTimers = useCallback(() => {
     if (settleTimerRef.current !== null) {
@@ -66,6 +68,7 @@ export function useCombatClock(): CombatClock {
     setPlayerProgress(0);
     setEnemyProgress(0);
     setPhase("idle");
+    lastVisualUpdateRef.current = 0;
     clearPhaseTimers();
   }, [clearPhaseTimers, encounterKey]);
 
@@ -81,9 +84,11 @@ export function useCombatClock(): CombatClock {
       previousTime = time;
       playerElapsedRef.current += elapsed;
       enemyElapsedRef.current += elapsed;
+      let resolvedEvent = false;
 
       if (playerElapsedRef.current >= COMBAT_ROLL_INTERVAL_MS) {
         playerElapsedRef.current %= COMBAT_ROLL_INTERVAL_MS;
+        resolvedEvent = true;
         triggerCombatRoll();
       }
 
@@ -100,6 +105,7 @@ export function useCombatClock(): CombatClock {
 
       if (enemyElapsedRef.current >= enemyIntervalMs) {
         enemyElapsedRef.current %= enemyIntervalMs;
+        resolvedEvent = true;
         performEnemyAttack();
       }
 
@@ -113,8 +119,14 @@ export function useCombatClock(): CombatClock {
         return;
       }
 
-      setPlayerProgress(playerElapsedRef.current / COMBAT_ROLL_INTERVAL_MS);
-      setEnemyProgress(enemyElapsedRef.current / enemyIntervalMs);
+      if (
+        resolvedEvent ||
+        time - lastVisualUpdateRef.current >= VISUAL_UPDATE_MS
+      ) {
+        lastVisualUpdateRef.current = time;
+        setPlayerProgress(playerElapsedRef.current / COMBAT_ROLL_INTERVAL_MS);
+        setEnemyProgress(enemyElapsedRef.current / enemyIntervalMs);
+      }
       frameRef.current = requestAnimationFrame(advance);
     };
 

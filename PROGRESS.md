@@ -8,6 +8,22 @@ Dette er den løbende implementeringslog for greenfield-versionen i denne mappe.
 - **M1 — Combat vertical slice:** Spilbar end-to-end gennem Forest Brute, Tier 2 crafting, Frontier Forge og første Wolf Den-encounter. Næste checkpoint er bruger-playtest og lyd/juice baseret på den faktiske oplevelse.
 - **M2+ — Skill Tree-mekanikker, sustain og dybere settlement:** Ikke påbegyndt.
 
+## 2026-07-12 — Smooth Combat Bar performance-fix
+
+### Rettet
+
+- Combat-clockens React-state blev tidligere opdateret på hvert animation frame og kunne derfor re-rendere store dele af appen op til 60 gange i sekundet. Det gav synlige hak på mobil.
+- Player- og enemy-fill kører nu som lineære CSS compositor-animationer, uafhængigt af Reacts renderfrekvens.
+- Combat-reglerne og event-timing er fortsat frame-præcise; kun den spiller-vendte countdown/ARIA-state throttles til 100 ms.
+- Fill-cyklussen starter ved den aktuelle clock-position, når Combat-viewet åbnes igen, og fortsætter automatisk gennem reset.
+- Reduced-motion bruger fortsat den diskrete React-progress uden compositor-animation.
+
+### Verificeret
+
+- Ved 390 px steg begge beregnede fill-transforms i hvert 50 ms-sample; player-fill passerede jævnt `0.994 → 0.007` gennem sit reset og fortsatte til `0.032`.
+- Browserkonsollen viste 0 runtime errors under målingen.
+- Production-build og hele testsuiten består: 9 testfiler / 69 tests.
+
 ## 2026-07-12 — Dynamiske Combat Speed Bars
 
 ### Tilføjet

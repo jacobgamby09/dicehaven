@@ -1,11 +1,12 @@
+import { useReducedMotion } from "motion/react";
+import { useState } from "react";
+
 interface CombatSpeedBarProps {
   actionLabel: string;
   ariaLabel: string;
   intervalMs: number;
-  isResolving?: boolean;
   label: string;
   progress: number;
-  resolvingLabel?: string;
   tone: "enemy" | "player";
 }
 
@@ -13,22 +14,25 @@ export function CombatSpeedBar({
   actionLabel,
   ariaLabel,
   intervalMs,
-  isResolving = false,
   label,
   progress,
-  resolvingLabel,
   tone,
 }: CombatSpeedBarProps): React.JSX.Element {
+  const reduceMotion = useReducedMotion();
   const safeProgress = Math.max(0, Math.min(1, progress));
-  const displayedProgress = isResolving ? 1 : safeProgress;
+  const [initialProgress] = useState(safeProgress);
   const intervalSeconds = intervalMs / 1_000;
   const remainingSeconds = Math.max(
     0,
     (intervalMs * (1 - safeProgress)) / 1_000,
   );
-  const status = isResolving
-    ? resolvingLabel ?? actionLabel
-    : `${remainingSeconds.toFixed(1)}s until ${actionLabel.toLowerCase()}`;
+  const status = `${remainingSeconds.toFixed(1)}s until ${actionLabel.toLowerCase()}`;
+  const fillStyle = reduceMotion
+    ? { transform: `scaleX(${safeProgress})` }
+    : {
+        animationDelay: `-${initialProgress * intervalMs}ms`,
+        animationDuration: `${Math.max(1, intervalMs)}ms`,
+      };
 
   return (
     <div className={`combat-speed-bar combat-speed-bar--${tone}`}>
@@ -40,14 +44,14 @@ export function CombatSpeedBar({
         aria-label={ariaLabel}
         aria-valuemax={100}
         aria-valuemin={0}
-        aria-valuenow={Math.round(displayedProgress * 100)}
+        aria-valuenow={Math.round(safeProgress * 100)}
         aria-valuetext={`${status}; ${intervalSeconds.toFixed(1)} second interval`}
         className="combat-speed-bar__track"
         role="progressbar"
       >
         <span
           className="combat-speed-bar__fill"
-          style={{ transform: `scaleX(${displayedProgress})` }}
+          style={fillStyle}
         />
       </div>
       <small>{intervalSeconds.toFixed(1)}s interval</small>
