@@ -8,6 +8,23 @@ Dette er den løbende implementeringslog for greenfield-versionen i denne mappe.
 - **M1 — Combat vertical slice:** Spilbar end-to-end gennem Forest Brute, Tier 2 crafting, Frontier Forge og første Wolf Den-encounter. Næste checkpoint er bruger-playtest og lyd/juice baseret på den faktiske oplevelse.
 - **M2+ — Skill Tree-mekanikker, sustain og dybere settlement:** Ikke påbegyndt.
 
+## 2026-07-12 — Dynamiske Combat Speed Bars
+
+### Tilføjet
+
+- Ny fælles **CombatSpeedBar** bruges af både Player Roll Speed og Enemy Attack Speed.
+- Begge bars viser live `X.Xs until roll/attack`, fuldt interval og en kontinuerlig custom fill, der resetter efter hvert event.
+- Player-baren bruger grøn skill-inspireret fill; enemy-baren bruger rød/orange attack-fill. Segmentmarkeringer gør forskellige rytmer lettere at sammenligne.
+- Custom `scaleX`-fill erstatter native progress for combat-timing og følger dermed den Safari-stabile kontrakt fra gathering-skills.
+- Progressbars eksponerer dynamisk `aria-valuenow` og `aria-valuetext`; reduced-motion fjerner transition uden at fjerne live state.
+
+### Verificeret
+
+- Browser-QA målte Player Roll fra 90% til 100%/`Rolling…` og Enemy Attack fra 84% til 96% i samme encounter.
+- Efter `Savage Bite` resetter enemy-baren til næste 5,5s-cyklus, mens player-baren fortsætter uafhængigt.
+- Mobil-QA ved 390 px viser begge dynamiske bars samtidig uden horisontalt overflow.
+- Production-build og hele testsuiten består: 9 testfiler / 69 tests.
+
 ## 2026-07-12 — Combat 2.0: fuld automation & simplificeret flow
 
 ### Tilføjet

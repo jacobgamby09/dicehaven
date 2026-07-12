@@ -3,6 +3,7 @@ import { COMBAT_ENEMIES, PLAYER_BLOCK_CAP, PLAYER_MAX_HP } from "../engine/comba
 import type { CombatClock } from "../hooks/useCombatClock";
 import { useGameStore } from "../store/gameStore";
 import { CombatDiceTray } from "./CombatDiceTray";
+import { CombatSpeedBar } from "./CombatSpeedBar";
 
 interface CombatBattleViewProps {
   clock: CombatClock;
@@ -74,9 +75,15 @@ export function CombatBattleView({
             </div>
             <div className="combat-v2-intent__numbers">
               <strong>{enemy.attack} Damage</strong>
-              <span>{(enemy.attackIntervalMs / 1_000).toFixed(1)}s speed</span>
             </div>
-            <progress aria-label="Time until enemy attack" max={1} value={clock.enemyProgress} />
+            <CombatSpeedBar
+              actionLabel="Attack"
+              ariaLabel={`${enemy.name} attack speed`}
+              intervalMs={clock.enemyIntervalMs}
+              label="Attack speed"
+              progress={clock.enemyProgress}
+              tone="enemy"
+            />
           </div>
         </div>
       </article>

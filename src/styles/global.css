@@ -5985,6 +5985,127 @@ progress::-moz-progress-bar {
   }
 }
 
+/* Safari-safe dynamic combat clocks, shared by player rolls and enemy attacks. */
+.combat-speed-bar {
+  --combat-speed-start: #7fa464;
+  --combat-speed-end: #c4d77b;
+  --combat-speed-dot: #9cc077;
+  display: grid;
+  width: 100%;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.combat-speed-bar--enemy {
+  --combat-speed-start: #b5523d;
+  --combat-speed-end: #ef9b5b;
+  --combat-speed-dot: #dc7650;
+}
+
+.combat-speed-bar__labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #aab7ac;
+  font-size: 0.62rem;
+}
+
+.combat-speed-bar__labels span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.combat-speed-bar__labels i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--combat-speed-dot);
+  box-shadow: 0 0 9px color-mix(in srgb, var(--combat-speed-dot) 65%, transparent);
+}
+
+.combat-speed-bar__labels strong {
+  color: #e9ddb9;
+  font-size: 0.65rem;
+  white-space: nowrap;
+}
+
+.combat-speed-bar__track {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 10px;
+  border: 1px solid rgba(224, 231, 215, 0.12);
+  border-radius: 999px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent calc(25% - 1px),
+      rgba(255, 255, 255, 0.07) calc(25% - 1px),
+      rgba(255, 255, 255, 0.07) 25%
+    ),
+    rgba(5, 14, 10, 0.46);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.34);
+}
+
+.combat-speed-bar__fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--combat-speed-start), var(--combat-speed-end));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--combat-speed-end) 32%, transparent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 80ms linear;
+  will-change: transform;
+}
+
+.combat-speed-bar small {
+  justify-self: end;
+  color: #829087;
+  font-size: 0.56rem;
+}
+
+.combat-v2-intent .combat-speed-bar {
+  grid-column: 1 / -1;
+  margin-top: 5px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.combat-v2-battle .combat-dice-tray > .combat-speed-bar {
+  margin-top: 11px;
+  padding: 10px 11px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+@media (max-width: 680px) {
+  .combat-speed-bar__labels {
+    gap: 8px;
+  }
+
+  .combat-speed-bar__labels span,
+  .combat-speed-bar__labels strong {
+    font-size: 0.58rem;
+  }
+
+  .combat-speed-bar__track {
+    height: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .combat-speed-bar__fill {
+    transition: none;
+  }
+}
+
 /* Combat 2.0: automatic dual-clock flow */
 .combat-v2-page {
   display: grid;

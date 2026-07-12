@@ -26,6 +26,7 @@ Sprogregel: GDD'en er på dansk (arbejdssprog). **Al spiller-vendt tekst i spill
 *Revision 2026-07-11 (7): Al fysisk dice-crafting er samlet i en dedikeret Crafting-side med Combat Dice/Skill Dice-tabs. Workshop åbner systemet; recipes bag manglende bygninger eller undiscovered blueprints skjules, mens Settlement forklarer de kommende unlocks (§10.1, §12).*
 *Revision 2026-07-11 (8): Combat Dice har et fælles, datadrevet visuelt sprog, hvor rolle styrer farve/motion, materiale styrer overflade, og tier/rarity styrer ramme og effektintensitet. Klikbare faces åbner én fælles regel-forklaring i Crafting, Arsenal og efter combat-landing (§11.5, §12).*
 *Revision 2026-07-12: Combat er fuldt automatisk real-time med uafhængig Player Roll Speed og Enemy Attack Speed. Ét encounter afsluttes i en eksplicit Victory/Defeat-state; Block bevarer restværdi op til Max HP, og Combat Hub/Arsenal er forenklet omkring preparation, observation og direkte slot-assignment (§11.1–§11.2, §12).*
+*Revision 2026-07-12 (2): Player Roll Speed og Enemy Attack Speed bruger samme dynamiske, Safari-sikre custom fill-kontrakt som gathering-skills. Begge viser live countdown, interval, kontinuerlig fill og tydeligt reset, men bevarer hver sin rollefarve (§12).*
 
 ---
 
@@ -344,6 +345,7 @@ Udvidelser pr. milestone:
 * **XP-enheder:** XP-balancer må aldrig vises som nøgne tal. Skill Tree-headeren viser eksempelvis `264 XP`, også når den forklarende label skjules på mobil.
 * **Combat-flow:** én side har fire tydelige states: Prepare/Combat Hub, Fighting, Victory og Defeat. Hubben viser zone, konkret trussel, loadout og én tydelig startknap. Resultat-staten viser XP, Monster Parts, loot-rolls, dice drops og handlingerne `Fight again`, `Edit loadout` og `Choose another zone`.
 * **Fighting-state:** fjenden står øverst med HP, Scouted og navngivet næste angreb samt sin Attack Speed-bar. Player-panelet samler HP, Block/Block Cap, Roll Speed-bar og de fysiske Combat Dice. Kun `Inspect loadout` og `Retreat` er tilgængelige under kamp.
+* **Combat Speed Bars:** Player Roll Speed og Enemy Attack Speed er custom `scaleX`-fills frem for native progress. De opdaterer kontinuerligt med `X.Xs until roll/attack`, viser det fulde interval og resetter visuelt efter resolution. Player bruger grøn fill; enemy bruger varm rød/orange fill, så de to samtidige rytmer kan aflæses uden kun at stole på tekst eller farve.
 * **Impact-kontrakt:** Player og enemy resolves ved deres egne clock-completions; player har prioritet ved præcis samtidighed. Animationer visualiserer den allerede deterministiske event og må ikke fryse den anden clock.
 * **Combat Arsenal:** fysisk inventory er den primære flade. Klik på en ejet die vælger den; detailpanelet viser faces og alle loadout-slots, som direkte kan equippe, unequippe eller erstatte. Slots er read-only, mens Combat er aktiv.
 * **Combat-die inspector:** alle seks faces, gennemsnit, source, ownership og level-gate skal kunne ses før equip. En tidligt droppet locked die vises som et kommende mål, ikke som skjult indhold.

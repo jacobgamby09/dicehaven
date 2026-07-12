@@ -3,6 +3,7 @@ import { useState } from "react";
 import { COMBAT_DICE, type CombatDieId, type CombatRollEvent } from "../engine/combat";
 import type { RollPhase } from "../hooks/useRollClock";
 import { CombatDie } from "./CombatDie";
+import { CombatSpeedBar } from "./CombatSpeedBar";
 import { FaceInfoOverlay } from "./FaceInfoOverlay";
 
 interface CombatDiceTrayProps {
@@ -55,13 +56,16 @@ export function CombatDiceTray({
 
       <progress aria-label="Player health" className="combat-v2-player-health" max={playerMaxHp} value={playerHp} />
 
-      <div className="combat-roll-meter">
-        <div>
-          <span>{phase === "rolling" ? "Rolling…" : "Next player roll"}</span>
-          <span>{(intervalMs / 1_000).toFixed(1)}s speed</span>
-        </div>
-        <progress aria-label="Time until next combat roll" max={1} value={progress} />
-      </div>
+      <CombatSpeedBar
+        actionLabel="Roll"
+        ariaLabel="Player roll speed"
+        intervalMs={intervalMs}
+        isResolving={phase === "rolling"}
+        label="Roll speed"
+        progress={progress}
+        resolvingLabel="Rolling…"
+        tone="player"
+      />
 
       <div className={`combat-dice-grid combat-dice-grid--${equippedDice.length}`}>
         {equippedDice.map((die, index) => (
